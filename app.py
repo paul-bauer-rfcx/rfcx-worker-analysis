@@ -1,7 +1,6 @@
 # web server modules
 import tornado.httpserver
 import tornado.ioloop
-import tornado.options
 import tornado.web
 import tornado.httpclient
 import tornado.gen
@@ -9,10 +8,15 @@ import json
 import boto
 import sys
 
+# import Tornado and AWS settings from file
+import settings
+from tornado.options import options
+
 # import RFCx custom modules
 from modules import feature_extraction # feature extraction with Welch
-# import known_recognition # compare against known sound profiles
-# import anomaly_detection # look for anomalies in sound profile
+# from modules import known_recognition # compare against known sound profiles
+# from modules import anomaly_detection # look for anomalies in sound profile
+# from modules import alert_ml # trigger alerts and save spectrum for ML
 
 class MainPage(tornado.web.RequestHandler):
   def get(self):
@@ -21,10 +25,10 @@ class MainPage(tornado.web.RequestHandler):
 class FeatureExtraction(tornado.web.RequestHandler):
   @tornado.web.asynchronous
   @tornado.gen.engine
-  def post(self):
+  def get(self):
     # grab wav file from S3 location based on filename in JSON data pushed from SQS with Boto
-    conn = boto.connect_s3(AWS_KEY, AWS_SECRET)
-    bucket = conn.get_bucket(BUCKET_NAME)
+    conn = boto.connect_s3(options.AWS_KEY, options.AWS_SECRET)
+    bucket = conn.get_bucket(options.BUCKET_NAME)
     filename = json.loads(self.request.body)['filename']
     key = bucket.get_key(filename)
     wav_file = key.get_contents_to_filename('sound.wav')
