@@ -3,7 +3,7 @@ import sndfileio
 import scipy
 import numpy as np
 
-class FeatureExtractor: 
+class SpectralAnalysis: 
 	def __init__(self, step=1000, fft_size=500, overlap=250, window='hanning'): 
 		self.step = step 
 		self.fft_size = fft_size
