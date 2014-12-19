@@ -13,12 +13,12 @@ import settings
 from tornado.options import options
 
 # import RFCx custom modules via service layer
-from modules import serviceLayer
+from modules import service_layer
 
 class analyzeSound(tornado.web.RequestHandler):
   @tornado.gen.coroutine
   def post(self):
-    
+    self.finish()
 
 class AddKnownSoundProfile(tornado.web.RequestHandler):
   # TO DO: allow the ML framework a way to interact with sound profiling to update it as needed
@@ -28,7 +28,7 @@ class AddKnownSoundProfile(tornado.web.RequestHandler):
 
 # routes to call the correct handlers
 app = tornado.web.Application([
-  (r"/analyzeSound", spectralAnalysis),
+  (r"/analyzeSound", analyzeSound),
   (r"/addKnownSoundProfile", AddKnownSoundProfile)
 ])
 
