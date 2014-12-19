@@ -10,7 +10,7 @@ import boto
 import sys
 
 # import RFCx custom modules
-import feature_extraction # feature extraction with Welch
+from modules import feature_extraction # feature extraction with Welch
 # import known_recognition # compare against known sound profiles
 # import anomaly_detection # look for anomalies in sound profile
 
