@@ -1,7 +1,7 @@
-from modules import spectral_analysis # spectral analysis with Welch
-from modules import sound_profiling # compare against known / anomaly sound profiles
-from modules import alerts # trigger alerts
-from modules import machine_learning  # save spectrum for ML
+from modules.domain_modules import spectral_analysis # spectral analysis with Welch
+from modules.domain_modules import sound_profiling # compare against known / anomaly sound profiles
+from modules.domain_modules import alerts # trigger alerts
+from modules.domain_modules import machine_learning  # save spectrum for ML
 
 # TO DO: Define stub classes/objects for the interfaces in service layer
 
