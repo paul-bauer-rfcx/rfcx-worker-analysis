@@ -13,7 +13,7 @@ from tornado.options import options
 # import RFCx custom modules via service layer
 from modules import service_layer
 
-class analyzeSound(tornado.web.RequestHandler):
+class AnalyzeSound(tornado.web.RequestHandler):
   @tornado.gen.coroutine
   def post(self):
     # filename = json.loads(self.request.body)['filename']
@@ -26,7 +26,7 @@ class AddKnownSoundProfile(tornado.web.RequestHandler):
 
 # routes to call the correct request handlers
 app = tornado.web.Application([
-  (r"/analyzeSound", analyzeSound),
+  (r"/analyzeSound", AnalyzeSound),
   (r"/addKnownSoundProfile", AddKnownSoundProfile)
 ])
 
