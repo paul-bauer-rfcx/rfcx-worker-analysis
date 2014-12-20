@@ -5,8 +5,6 @@ import tornado.web
 import tornado.httpclient
 import tornado.gen
 import json
-import boto
-import sys
 
 # import Tornado and AWS settings from file
 import settings
@@ -18,15 +16,15 @@ from modules import service_layer
 class analyzeSound(tornado.web.RequestHandler):
   @tornado.gen.coroutine
   def post(self):
+    # filename = json.loads(self.request.body)['filename']
     self.finish()
 
 class AddKnownSoundProfile(tornado.web.RequestHandler):
-  # TO DO: allow the ML framework a way to interact with sound profiling to update it as needed
   @tornado.gen.coroutine
-  def get(self):
+  def post(self):
     self.finsh()
 
-# routes to call the correct handlers
+# routes to call the correct request handlers
 app = tornado.web.Application([
   (r"/analyzeSound", analyzeSound),
   (r"/addKnownSoundProfile", AddKnownSoundProfile)
@@ -34,8 +32,7 @@ app = tornado.web.Application([
 
 if __name__ == "__main__":
   port = 5000
-  base = "http://localhost:" + str(port) + "/"
   app.listen(port)
-  print "Web server started: " + base
+  print "Web server started: http://localhost:" + str(port) + "/"
   tornado.ioloop.IOLoop.instance().start()
   

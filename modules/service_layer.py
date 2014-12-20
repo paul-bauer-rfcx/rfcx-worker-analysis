@@ -5,7 +5,7 @@ from modules.domain_modules import machine_learning  # save spectrum for ML
 
 # TO DO: Define stub classes/objects for the interfaces in service layer
 
-class SpectralAnalysis():
+class SpectralAnalysis:
   def __init__(self):
     '''Spectral Analysis Class:
     Processes audio files and outputs spectrum data in the form of a Spectrum Class object.
@@ -15,7 +15,7 @@ class SpectralAnalysis():
   def validate(self):
     pass
 
-  def analyze():
+  def analyze(self):
     '''Processes a wav file into a Spectrum class object.'''
     pass
     # return Spectrum()
