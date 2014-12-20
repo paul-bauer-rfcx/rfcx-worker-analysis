@@ -26,4 +26,15 @@ class S3:
 
   def validate(self):
     pass
-  
+
+class MySQL:
+  def __init__(self):
+    pass
+
+class Redis:
+  def __init__(self):
+      pass  
+
+class SQS:
+  def __init__(self):
+    pass
