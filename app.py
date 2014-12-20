@@ -19,7 +19,7 @@ class AnalyzeSound(tornado.web.RequestHandler):
     # filename = json.loads(self.request.body)['filename']
     self.finish()
 
-class UpdateSoundProfiles(tornado.web.RequestHandler):
+class UpdateSoundProfile(tornado.web.RequestHandler):
   @tornado.gen.coroutine
   def post(self):
     self.finsh()
@@ -27,7 +27,7 @@ class UpdateSoundProfiles(tornado.web.RequestHandler):
 # routes to call the correct request handlers
 app = tornado.web.Application([
   (r"/analyzeSound", AnalyzeSound),
-  (r"/addKnownSoundProfile", UpdateSoundProfiles)
+  (r"/updateSoundProfile", UpdateSoundProfile)
 ])
 
 if __name__ == "__main__":
