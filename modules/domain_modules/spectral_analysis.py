@@ -4,11 +4,13 @@ import scipy
 import numpy as np
 
 class SpectralAnalysis: 
-	def __init__(self, step=1000, fft_size=500, overlap=250, window='hanning'): 
+	def __init__(self, file_path, step=1000, fft_size=500, overlap=250, window='hanning'): 
 		self.step = step 
 		self.fft_size = fft_size
 		self.overlap = overlap
 		self.window = window 
+		self.path = file_path
+		self.extract(self.path)
 
 	def extract(self, path):
 		''' Function will process an audio sample in intervals defined 
