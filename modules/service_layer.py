@@ -1,28 +1,35 @@
-from modules.domain_modules import spectral_analysis # spectral analysis with Welch
+from modules.domain_modules import download_audio  # download audio file from storage
+from modules.domain_modules import spectral_analysis # spectral analysis of audio
 from modules.domain_modules import sound_profiling # compare against known / anomaly sound profiles
 from modules.domain_modules import alerts # trigger alerts
-from modules.domain_modules import machine_learning  # save spectrum for ML
 
 class AnalyzeSound:
   def __init__(self, key):
     '''Spectral Analysis Class:
     Processes audio files and outputs spectrum data in the form of a Spectrum Class object.
     '''
-    self.key = validate(key)
-    pass
+    # validate JSON input data
+    if self.validate(key):
+      # analyze audio file
+      self.analyze(key)
+    else:
+      raise ValueError
 
-  def validate(key):
+  def validate(self, key):
     # check JSON string against signed S3 url regex
-    return re.match(key)
+    # return re.match(key)
+    return True
 
-  def analyze(self):
-    '''Processes a wav file into a Spectrum class object.'''
-    pass
-    # return Spectrum()
+  def analyze(self, key):
+    '''Processes a wav file into a spectrum, profile it, and trigger results.'''
+    audio_file = download_audio.DownloadAudio(key)
+    spectrum = spectral_analysis.SpectralAnalysis(audio_file)
+    profile = sound_profiling.SoundProfiler(spectrum)
+    alert = alerts.Alert(profile)
 
 
 class UpdateSoundProfile:
-  def __init__(self, profile):
+  def __init__(self, profile, settings):
       '''Update Sound Profile Class: Updates or creates sound profile based on ML framework.'''
       pass
 
