@@ -1,0 +1,17 @@
+language: python
+python:
+  - "2.7"
+
+# command to install virtualenv dependencies
+install:
+  - "pip install -r requirements.txt"
+
+# command to run setup and tests
+beforescript: true
+script: nosetests
+afterscript: true
+
+# specify branches to test
+branches:
+  only:
+    - master
