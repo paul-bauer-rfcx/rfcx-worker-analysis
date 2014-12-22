@@ -8,14 +8,14 @@ import settings
 from modules import service_layer
 
 class AnalyzeSound(web.RequestHandler):
-  @web.asynchronous
-  @gen.engine
+  # @web.asynchronous
+  # @gen.engine
   def post(self):
     # parse JSON received to get filename/key
     key = json.loads(self.request.body)['filename']
     # SL call to analyze the audio linked to given key value
-    response = yield service_layer.AnalyzeSound(key)
-    self.write(response.body)
+    response = service_layer.AnalyzeSound(key)
+    self.write(response)
     self.finish()
 
 class UpdateSoundProfile(web.RequestHandler):

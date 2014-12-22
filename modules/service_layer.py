@@ -11,7 +11,7 @@ class AnalyzeSound:
     # validate JSON input data
     if self.validate(key):
       # analyze audio file
-      self.analyze(key)
+      return self.analyze(key)
     else:
       raise ValueError
 
