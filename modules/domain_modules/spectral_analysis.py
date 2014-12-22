@@ -5,7 +5,7 @@ import numpy as np
 
 class Spectrum:
 	def __init__(self):
-		'''Sound Class: Defines the properties and form that output spectrum data should take.'''
+		'''Spectrum Class: Defines the properties and form that output spectrum data should take.'''
 		pass
 
 
@@ -16,14 +16,13 @@ class SpectralAnalysis:
 		self.analysis = analysis_type
 		self.sound = self.load_file(file_path)
 
-
 	def load_file(self, path):
 		# load the audio file into a numpy array for subsequent analysis
 		snd, fs = sndfileio.sndread(path)
 		return (snd, fs)
 
-	def select_analysis(self, analysis):
-		if analysis_type == 'welch':
+	def select_analysis(self):
+		if self.analysis == 'welch':
 			return self.welch()
 		else:
 			# throw error 
