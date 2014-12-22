@@ -13,7 +13,7 @@ class SpectralAnalysis:
 	def __init__(self, file_path, analysis="welch"):
 		'''Spectral Analysis Class:
 		Takes in a file path to audio clip, analysis method desired. '''
-		self.analysis = analysis_type
+		self.analysis = analysis
 		self.sound = self.load_file(file_path)
 
 	def load_file(self, path):
