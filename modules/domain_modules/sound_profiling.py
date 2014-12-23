@@ -1,12 +1,11 @@
-class Profiler:
+class SoundProfiler:
   def __init__(self, spectrum):
-    self.detected = Profile()
     # validate the spectrum data passed in
     if self.validate(spectrum):
       # profile the spectrum data and return profile object to Alert module
-      self.analyze(spectrum)
+      self.profile = self.analyze(spectrum)
     else:
-      raise ValueError
+      raise Exception("Spectrum passed to Profiler module was not valid.")
 
   def validate(self, spectrum):
     # validate the spectrum input received
@@ -14,9 +13,11 @@ class Profiler:
 
   def analyze(self, spectrum):
     # determine if a given spectrum falls within know sound profiles
-    return self.detected
+    return Profile()
 
 
 class Profile:
   def __init__(self):
-    pass
+    # test properties
+    self.type = "Known"
+    self.classification = "Chainsaw"

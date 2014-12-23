@@ -1,4 +1,4 @@
-from modules.domain_modules import download_audio  # download audio file from storage
+from modules.domain_modules import load_sound  # download and load audio file from s3 storage
 from modules.domain_modules import spectral_analysis # spectral analysis of audio
 from modules.domain_modules import sound_profiling # compare against known / anomaly sound profiles
 from modules.domain_modules import alerts # trigger alerts
@@ -11,9 +11,9 @@ class AnalyzeSound:
     # validate JSON input data
     if self.validate(key):
       # analyze audio file
-      return self.analyze(key)
+      self.analyze(key)
     else:
-      raise ValueError
+      raise Exception("Key passed to AnalyzeSound was not valid.")
 
   def validate(self, key):
     # check JSON string against signed S3 url regex
@@ -22,9 +22,9 @@ class AnalyzeSound:
 
   def analyze(self, key):
     '''Processes a wav file into a spectrum, profile it, and trigger results.'''
-    audio_file = download_audio.DownloadAudio(key)
-    spectrum = spectral_analysis.SpectralAnalysis(audio_file)
-    profile = sound_profiling.SoundProfiler(spectrum)
+    sound = load_sound.Sound(key)
+    spectrum = spectral_analysis.SpectralAnalysis(sound).spectrum
+    profile = sound_profiling.SoundProfiler(spectrum).profile
     alert = alerts.Alert(profile)
 
 

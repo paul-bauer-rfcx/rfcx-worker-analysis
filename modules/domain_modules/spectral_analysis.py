@@ -1,6 +1,6 @@
 # extraction and analysis module
-import sndfileio 
 import scipy
+from scipy.io import wavfile
 import numpy as np
 
 class Spectrum:
@@ -8,25 +8,20 @@ class Spectrum:
 		'''Spectrum Class: Defines the properties and form that output spectrum data should take.'''
 		pass
 
-
 class SpectralAnalysis: 
 	def __init__(self, file_path, analysis="welch"):
 		'''Spectral Analysis Class:
 		Takes in a file path to audio clip, analysis method desired. '''
 		self.analysis = analysis
-		self.sound = self.load_file(file_path)
-
-	def load_file(self, path):
-		# load the audio file into a numpy array for subsequent analysis
-		snd, fs = sndfileio.sndread(path)
-		return (snd, fs)
+		self.spectrum = self.select_analysis()
 
 	def select_analysis(self):
 		if self.analysis == 'welch':
-			return self.welch()
+			# return self.welch()
+			return Spectrum()
 		else:
 			# throw error 
-			raise ValueError 
+			raise Exception("Analysis type selected was not found.")
 
 	def welch(self):
 		''' Function will process an audio sample in intervals defined 
