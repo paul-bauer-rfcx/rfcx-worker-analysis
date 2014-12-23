@@ -1,38 +1,32 @@
 # web server modules
-from tornado import httpserver, ioloop, httpclient, web, gen, options
+from flask import Flask, request
+import gevent #import monkey; monkey.patch_all()  
+import requests  
 import json
 
-# import Tornado and AWS settings from file
+# import Flask and AWS settings from file
 import settings
 # import RFCx custom modules via service layer
 from modules import service_layer
 
-class AnalyzeSound(web.RequestHandler):
-  # @web.asynchronous
-  # @gen.engine
-  def post(self):
-    # parse JSON received to get filename/key
-    key = json.loads(self.request.body)['filename']
+# setup web app instance
+app = Flask(__name__) 
+
+# routes to call the correct request handlers  
+@app.route('/analyzeSound', methods=['POST'])
+def analyze_sound():
+  # parse JSON received to get filename/key
+  key = request.get_json()["filename"]
+  gevent.joinall([
     # SL call to analyze the audio linked to given key value
-    response = service_layer.AnalyzeSound(key)
-    self.write(response)
-    self.finish()
+    gevent.spawn(service_layer.AnalyzeSound(key))
+  ])
+  return """Worker thread started! :) Closing out the HTTP request!"""
 
-class UpdateSoundProfile(web.RequestHandler):
-  @web.asynchronous
-  @gen.engine
-  def post(self):
-    self.finsh()
-
-# routes to call the correct request handlers
-app = web.Application([
-  (r"/analyzeSound", AnalyzeSound),
-  (r"/updateSoundProfile", UpdateSoundProfile)
-])
+@app.route('/updateSoundProfile', methods=['POST'])
+def update_sound_profile():  
+  return "Update the sounds from ML...?"
 
 if __name__ == "__main__":
-  port = 5000
-  app.listen(port)
-  print "Web server started: http://localhost:" + str(port) + "/"
-  ioloop.IOLoop.instance().start()
+  app.run() 
   
