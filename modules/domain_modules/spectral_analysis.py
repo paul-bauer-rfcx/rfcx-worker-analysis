@@ -34,7 +34,7 @@ class Spectrum(object):
         self.sound = sound
         self.framesz = framesz
         self.hop = hop
-        self.duration = sound.duration
+        self.duration = sound.duration_ms
         self.complex_arr, self.samplerate, self.freqs = stft(
             sound.data, sound.samplerate, self.framesz, self.hop
         )

@@ -4,14 +4,14 @@ from modules.domain_modules import sound_profiling # compare against known / ano
 from modules.domain_modules import alerts # trigger alerts
 
 class AnalyzeSound:
-  def __init__(self, key):
+  def __init__(self, key, meta_data):
     '''Spectral Analysis Class:
     Processes audio files and outputs spectrum data in the form of a Spectrum Class object.
     '''
     # validate JSON input data
     if self.validate(key):
       # analyze audio file
-      self.analyze(key)
+      self.analyze(key, meta_data)
     else:
       raise Exception("Key passed to AnalyzeSound was not valid.")
 
@@ -20,12 +20,12 @@ class AnalyzeSound:
     # return re.match(key)
     return True
 
-  def analyze(self, key):
+  def analyze(self, key, meta_data):
     '''Processes a wav file into a spectrum, profile it, and trigger results.'''
-    sound = load_sound.Sound(key)
-    spectrum = spectral_analysis.SpectralAnalysis(sound).spectrum
+    sound = load_sound.Sound(key, meta_data)
+    spectrum = spectral_analysis.Spectrum(sound)
     profile = sound_profiling.SoundProfiler(spectrum).profile
-    alert = alerts.Alert(profile)
+    alert = alerts.Alert(profile, spectrum)
 
 
 class UpdateSoundProfile:

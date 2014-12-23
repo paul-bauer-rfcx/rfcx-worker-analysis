@@ -1,0 +1,18 @@
+{
+ "guardianAudio": {
+  "id": "60819a58-69e9-4253-87bf-eb462aa846b2",
+  "uri:": "./assets/fedcba-2014-12-23T14-24-49.wav",
+  "createdAt": "2014-12-23T13:46:42.311Z",
+  "lengthMilliseconds": 150000,
+  "checkIn": {
+    "id": "806dfafk-ghss-3423-bdh3-dkvnkdoskndk",
+    "createdAt": "2014-12-23T13:46:42.311Z",
+    "ambientTemperature": 30,
+    "guardian": {
+      "id": "vhdsdfehfoks",
+      "latitude": 3.6141375,
+      "longitude": 14.2108033
+    }
+  }
+ } 
+}

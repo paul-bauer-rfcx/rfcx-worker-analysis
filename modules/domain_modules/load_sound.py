@@ -1,29 +1,37 @@
 import boto
 from scipy.io import wavfile as wav
 
-
 class Sound:
     """
     waveform container
     """
-    def __init__(self, key):
+    def __init__(self, key, meta_data):
       self.s3_key = key
-      # validate key passed in
-      if self.validate(self.s3_key):
+      # validate JSON meta data passed in
+      if self.validate(meta_data):
         # grab sound file from s3 to local
         self.fp = download_file(self.s3_key)
         # read in the sound 
         self.read(self.fp)
-      else:
-        raise Exception("File path passed to Sound was not valid.")
 
-    def validate(self, fp):
-      # validate the JSON fp input received
-      return True
+    def validate(self, meta_data):
+      # validate the JSON input received by populating meta data for object
+      try:
+        self.start_time = str(meta_data['guardianAudio']['checkIn']['createdAt'])
+        self.duration_ms = int(meta_data['guardianAudio']['lengthMilliseconds'])
+        self.latitude = str(meta_data['guardianAudio']['checkIn']['guardian']['latitude'])
+        self.longitude = str(meta_data['guardianAudio']['checkIn']['guardian']['longitude'])
+        self.ambientTemp = int(meta_data['guardianAudio']['checkIn']['ambientTemperature'])
+      except:
+        # raise an exception if any of the meta data is missing or the wrong format. 
+        # TO DO: Log error with affected S3 keys for investigation
+        raise Exception("JSON meta data is not the ocrrect format! File/url:%s"%self.s3_key)
+      else:
+        return True
 
     def read(self, fp):
         self.data, self.samplerate = read_sound(fp)
-        self.duration = float(self.data.shape[0])/self.samplerate
+        
 
     def write(self, fp):
         write_sound(fp, data, samplerate)

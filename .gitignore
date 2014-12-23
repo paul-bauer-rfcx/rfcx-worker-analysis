@@ -54,4 +54,4 @@ docs/_build/
 target/
 
 # test alert file
-alert_file.txt
+tmp_alerts/*

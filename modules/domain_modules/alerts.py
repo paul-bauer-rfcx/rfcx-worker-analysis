@@ -1,7 +1,10 @@
+from random import randint
+import json
+
 class Alert:
-  def __init__(self, profile):
+  def __init__(self, profile, spectrum):
     if self.validate(profile):
-      self.alert_status = self.push_alert(profile)
+      self.alert_status = self.push_alert(profile, spectrum)
     else:
         raise Exception("Profile passed to Alert module was not valid.")
       
@@ -9,13 +12,15 @@ class Alert:
     # check to be sure that the profile passed in has correct data.
     return True
 
-  def push_alert(self, profile):
+  def push_alert(self, profile, spectrum):
     # if profile passed in of KNOWN type, trigger alert to API with SQS, else do nothing.
     if profile.type == "Known":
       # make new SQS item to push alert event to 3rd party API
       # testing alert output after worker thread starts and HTTP closes by writing out to local file
-      f = open('./alert_file.txt', 'w')
-      f.write("Alert was triggered successfully! Rejoice! :)\n")
+      f = open('./tmp_alerts/file_'+str(randint(1,10000))+'.txt', 'w')
+      f.write("Alert was triggered! Rejoice! :)\n\n")
+      f.write("Spectrum object address(uniqueness):\n")
+      f.write(str(spectrum))
       f.close()
       return True
     else:

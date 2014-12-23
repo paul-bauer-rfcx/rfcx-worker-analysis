@@ -15,18 +15,25 @@ app = Flask(__name__)
 # routes to call the correct request handlers  
 @app.route('/analyzeSound', methods=['POST'])
 def analyze_sound():
-  # parse JSON received to get filename/key
-  key = request.get_json()["filename"]
+  # parse JSON received from SQS
+  data = request.get_json()
+  key = str(data["guardianAudio"]["uri:"])
   gevent.joinall([
     # SL call to analyze the audio linked to given key value
-    gevent.spawn(service_layer.AnalyzeSound(key))
+    gevent.spawn(service_layer.AnalyzeSound(key, data))
   ])
-  return """Worker thread started! :) Closing out the HTTP request!"""
+  return """Background worker thread started!"""
 
 @app.route('/updateSoundProfile', methods=['POST'])
 def update_sound_profile():  
-  return "Update the sounds from ML...?"
+    # parse JSON received to get filename/key
+  data = request.get_json()
+  gevent.joinall([
+    # SL call to analyze the audio linked to given key value
+    gevent.spawn()
+  ])
+  return "Update the sounds from ML."
 
 if __name__ == "__main__":
-  app.run() 
+  app.run(debug=True) 
   
