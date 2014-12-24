@@ -4,12 +4,12 @@
 numpy==1.9.1
 scipy==0.14.0
 matplotlib==1.4.2
+pylab
+subprocess
 
 [Web Framework]
 Flask==0.10.1
 gevent==1.0.1
-gevent-websocket==0.9.3
-greenlet==0.4.4
 boto==2.32.1
 
 [Unit Testing]
