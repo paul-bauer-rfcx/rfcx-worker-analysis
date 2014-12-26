@@ -4,7 +4,7 @@ of an audio sample into a spectrum and any related data.
 
 import scipy
 import numpy as np
-from scipy.signal
+import scipy.signal
 import subprocess
 import pylab
 from matplotlib import pyplot as plt
