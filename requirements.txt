@@ -1,9 +1,9 @@
 # RFCx-Worker-Analysis
 
 # Data Analysis
-numpy==1.9.1
-scipy==0.14.0
-matplotlib==1.4.2
+#numpy==1.9.1
+#scipy==0.14.0
+#matplotlib==1.4.2
 
 # Web Framework
 Flask==0.10.1
