@@ -17,13 +17,14 @@ class SoundProfiler(object):
         return True
 
     def analyze(self, spectrum):
-        '''determine if a given spectrum falls within know sound profiles'''
-        return Profile()
+        '''determine if a given spectrum falls within known sound profiles'''
+        return Profile(spectrum)
 
 
 class Profile(object):
     ''''Profile Class. Holds all data needed to do an analysis of audio sample.'''
-    def __init__(self):
+    def __init__(self, spectrum):
         # test properties
         self.type = "Known"
         self.classification = "Chainsaw"
+        self.spectrum = spectrum

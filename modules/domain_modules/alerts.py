@@ -2,16 +2,17 @@
 known sound has been detected.
 '''
 
-from random import randint
+import requests
 import json
 
 class Alert(object):
     '''Alert Class. Defines how the framework should respond to a given
     sound profile type and the end API to call.
     '''
-    def __init__(self, profile, spectrum):
+    def __init__(self, profile):
         if self.validate(profile):
-            self.alert_status = self.push_alert(profile, spectrum)
+            self.profile = profile
+            self.alert_status = self.push_alert()
         else:
             raise Exception("Profile passed to Alert module was not valid.")
 
@@ -19,16 +20,30 @@ class Alert(object):
         '''check to be sure that the profile passed in has correct data.'''
         return True
 
-    def push_alert(self, profile, spectrum):
-        '''if profile passed in of KNOWN type, trigger alert to API with SQS, else do nothing.
+    def push_alert(self):
+        '''If profile passed in of KNOWN type, trigger alert to API with SQS, else do nothing.
         '''
-        if profile.type == "Known":
-            ''' make new SQS item to push alert event to 3rd party API'''
-            # testing alert output after worker thread starts and HTTP closes by writing out to local file
-            f = open('./tmp_alerts/file_'+str(randint(1,10000))+'.txt', 'w')
-            f.write("Alert was triggered! Rejoice! :)\n\n")
-            f.write("Spectrum object address(uniqueness):\n")
-            f.write(str(spectrum))
+        if self.profile.type == "Known":
+            service_key = "TEST ONLY - NO API CALL" # get account key from config file
+            guardian_id = self.profile.spectrum.sound.guardian_id
+            snd_class = self.profile.classification
+            # TO DO: pull date/time from spectrum slice and sound start time
+            date_time = self.profile.spectrum.sound.start_time
+            incident_key = guardian_id +'-'+snd_class+'-'+date_time
+            # Send an alert event to the 3rd party API via JSON data
+            f = open('./tmp_alerts/API_call.txt', 'w')
+            url = 'http://localhost:5000/' #'https://events.pagerduty.com/generic/2010-04-15/create_event.json'
+            payload = '''{
+                "service_key": %s,
+                "incident_key": %s,
+                "event_type": "trigger",
+                "description": "Detection of sound (%s) by guardian %s on %s",
+                "client": "Rainforest Connection Monitoring Service",
+                "client_url": "http://rfcx.org/",
+                "details": { "ping time": "1500ms", "load avg": 0.75 }
+                }''' % (service_key, incident_key, snd_class, guardian_id, date_time)
+            req = requests.post(url, headers={'content-type': 'application/json'}, data=json.dumps(payload))
+            f.write(req.text)
             f.close()
             return True
         else:

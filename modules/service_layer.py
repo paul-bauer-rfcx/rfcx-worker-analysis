@@ -38,7 +38,7 @@ class AnalyzeSound(object):
         sound = load_sound.Sound(key, meta_data)
         spectrum = spectral_analysis.Spectrum(sound)
         profile = sound_profiling.SoundProfiler(spectrum).profile
-        alert = alerts.Alert(profile, spectrum)
+        alert = alerts.Alert(profile)
 
 
 class UpdateSoundProfile(object):

@@ -26,6 +26,7 @@ class Sound(object):
             self.latitude = str(meta_data['guardianAudio']['checkIn']['guardian']['latitude'])
             self.longitude = str(meta_data['guardianAudio']['checkIn']['guardian']['longitude'])
             self.ambientTemp = int(meta_data['guardianAudio']['checkIn']['ambientTemperature'])
+            self.guardian_id = str(meta_data['guardianAudio']['checkIn']['guardian']['id'])
         except:
             # raise an exception if any of the meta data is missing or the wrong format.
             raise Exception("JSON meta data is not the ocrrect format! File/url:%s"%self.s3_key)
