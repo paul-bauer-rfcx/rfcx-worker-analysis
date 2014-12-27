@@ -5,6 +5,7 @@ import re
 # import custom RFCx modules from modules folder
 from modules.domain_modules import load_sound
 from modules.domain_modules import spectral_analysis
+from modules.domain_modules import fingerprinting
 from modules.domain_modules import sound_profiling
 from modules.domain_modules import alerts
 
@@ -25,7 +26,7 @@ class AnalyzeSound(object):
     def validate(self, key):
         '''Validate: Check JSON string against signed S3 url regex
         '''
-        regex = re.compile("fedcba") # test regex. switch to s3 url.
+        regex = re.compile("https://rfcx-ark.s3-eu-west-1.amazonaws.com/development/guardians/") # test regex. switch to s3 url.
         if regex.findall(key) != None:
             return True
         else:
@@ -37,8 +38,9 @@ class AnalyzeSound(object):
         '''
         sound = load_sound.Sound(key, meta_data)
         spectrum = spectral_analysis.Spectrum(sound)
-        profile = sound_profiling.SoundProfiler(spectrum).profile
-        alert = alerts.Alert(profile)
+        prof_meta = fingerprinting.Fingerprinter(spectrum).profile
+        prof_final = sound_profiling.SoundProfiler(prof_meta).profile
+        alert = alerts.Alert(prof_final)
 
 
 class UpdateSoundProfile(object):
