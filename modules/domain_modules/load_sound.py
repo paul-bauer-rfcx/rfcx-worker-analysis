@@ -69,7 +69,7 @@ def download_file(key):
     if res.status_code == 200:
         try:
             # write the response content to file on local disk
-            fp = './audio_temp_' + str(random.randint(1,1000000)) + '.wav'
+            fp = './tmp/audio_temp_' + str(random.randint(1,1000000)) + '.wav'
             with open(fp, 'w') as f:
                 f.write(res.content)
         except:
