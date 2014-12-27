@@ -5,6 +5,7 @@ import re
 # import custom RFCx modules from modules folder
 from modules.domain_modules import load_sound
 from modules.domain_modules import spectral_analysis
+from modules.domain_modules import fingerprinting
 from modules.domain_modules import sound_profiling
 from modules.domain_modules import alerts
 
@@ -37,8 +38,9 @@ class AnalyzeSound(object):
         '''
         sound = load_sound.Sound(key, meta_data)
         spectrum = spectral_analysis.Spectrum(sound)
-        profile = sound_profiling.SoundProfiler(spectrum).profile
-        alert = alerts.Alert(profile)
+        prof_meta = fingerprinting.Fingerprinter(spectrum).profile
+        prof_final = sound_profiling.SoundProfiler(prof_meta).profile
+        alert = alerts.Alert(prof_final)
 
 
 class UpdateSoundProfile(object):
