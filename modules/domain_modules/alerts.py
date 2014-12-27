@@ -23,7 +23,7 @@ class Alert(object):
     def push_alert(self):
         '''If profile passed in of KNOWN type, trigger alert to API with SQS, else do nothing.
         '''
-        if self.profile.type == "Known":
+        if self.profile.type == "known":
             service_key = "TEST ONLY - NO API CALL" # get account key from config file
             guardian_id = self.profile.spectrum.sound.guardian_id
             snd_class = self.profile.classification
@@ -31,7 +31,6 @@ class Alert(object):
             date_time = self.profile.spectrum.sound.start_time
             incident_key = guardian_id +'-'+snd_class+'-'+date_time
             # Send an alert event to the 3rd party API via JSON data
-            # used bad url for testing to avoid app hanging waiting for a response.
             url = 'http://localhost/:5000' #'https://events.pagerduty.com/generic/2010-04-15/create_event.json'
             payload = '''{
                 "service_key": %s,
