@@ -31,8 +31,8 @@ class Alert(object):
             date_time = self.profile.spectrum.sound.start_time
             incident_key = guardian_id +'-'+snd_class+'-'+date_time
             # Send an alert event to the 3rd party API via JSON data
-            f = open('./tmp_alerts/API_call.txt', 'w')
-            url = 'http://localhost:5000/' #'https://events.pagerduty.com/generic/2010-04-15/create_event.json'
+            # used bad url for testing to avoid app hanging waiting for a response.
+            url = 'http://localhost/:5000' #'https://events.pagerduty.com/generic/2010-04-15/create_event.json'
             payload = '''{
                 "service_key": %s,
                 "incident_key": %s,
@@ -43,8 +43,6 @@ class Alert(object):
                 "details": { "ping time": "1500ms", "load avg": 0.75 }
                 }''' % (service_key, incident_key, snd_class, guardian_id, date_time)
             req = requests.post(url, headers={'content-type': 'application/json'}, data=json.dumps(payload))
-            f.write(req.text)
-            f.close()
             return True
         else:
             # there is no explicit detection of sound. No alert is needed.
