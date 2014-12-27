@@ -2,8 +2,9 @@
 sound object with the audio and meta data passed in from a device.
 '''
 
-import boto
+import requests
 from scipy.io import wavfile as wav
+from scipy.signal import resample
 
 class Sound(object):
     """
@@ -36,6 +37,7 @@ class Sound(object):
     def read(self, fp):
         ''''''
         self.data, self.samplerate = read_sound(fp)
+        self.duration = float(self.data.shape[0])/self.samplerate
 
     def write(self, fp):
         ''''''
@@ -43,18 +45,22 @@ class Sound(object):
 
     def resample(self, samplerate):
         ''''''
-        from scipy.signal import resample
         newsample = int(self.data.shape[0]*samplerate/self.samplerate)
         s = Sound()
         s.from_array(resample(self.data, newsample), samplerate)
         return s
 
+    def from_array(self, data, samplerate):
+        self.data = data
+        self.samplerate = samplerate
+        self.duration = float(self.data.shape[0])/self.samplerate
 
 def download_file(key):
     '''download the file from s3 to local instance via boto
     '''
     fp = key # test only
     # return downloaded file's path
+    # fp = requests.get(key)
     return fp
 
 def read_sound(fp):

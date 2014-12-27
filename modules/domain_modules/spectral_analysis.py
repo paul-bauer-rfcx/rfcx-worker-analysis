@@ -5,9 +5,6 @@ of an audio sample into a spectrum and any related data.
 import scipy
 import numpy as np
 import scipy.signal
-import subprocess
-import pylab
-from matplotlib import pyplot as plt
 
 class Bbox(object):
     '''Bbox Class:
@@ -20,6 +17,7 @@ class Bbox(object):
         self.start_time = start_time if start_time is not None else 0.
         self.end_time = end_time if end_time is not None else spec.duration
         self.spec = spec
+
     def ix(self):
         spec = self.spec
         start_freq_ix = np.argmin(np.abs(spec.freqs-self.start_freq))
@@ -28,13 +26,14 @@ class Bbox(object):
         end_time_ix = np.argmin(np.abs(spec.times-self.end_time))
         return slice(start_freq_ix, end_freq_ix), slice(start_time_ix, end_time_ix)
 
+
 class Spectrum(object):
     '''Spectrum Class: Pectrogram of a sound: sound .. Sound object'''
     def __init__(self, sound, framesz=.2, hop=.1):
         self.sound = sound
         self.framesz = framesz
         self.hop = hop
-        self.duration = sound.duration_ms
+        self.duration = sound.duration
         self.complex_arr, self.samplerate, self.freqs = stft(
             sound.data, sound.samplerate, self.framesz, self.hop
         )
@@ -50,7 +49,7 @@ class Spectrum(object):
         bbox = Bbox(self, start_freq, end_freq, start_time, end_time)
         freq_slice, time_slice = bbox.ix()
         cpy = self.complex_arr[freq_slice, time_slice].copy()
-        self.complex_arr[:, :] = .000001+.000001j
+        self.complex_arr[:,:]=.000001+.000001j
         self.complex_arr[freq_slice, time_slice] = cpy
         self._calc()
 
@@ -64,6 +63,7 @@ class Spectrum(object):
         s = Sound()
         s.from_array(data, self.sound.samplerate)
         return s
+
 
 def stft(x, fs, framesz, hop):
     ''' Rolling/hopping hamming window FFT:
