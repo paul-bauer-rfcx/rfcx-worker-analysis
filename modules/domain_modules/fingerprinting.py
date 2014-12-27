@@ -21,7 +21,7 @@ class Fingerprinter(object):
         '''Adds new meta information to the growing audio profile to aid in downstream
         sound classification
         '''
-        profile.type = "chainsaw"
+        profile.classification = "chainsaw"
 
 
 class Profile(object):

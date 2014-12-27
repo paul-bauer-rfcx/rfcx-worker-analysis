@@ -9,9 +9,7 @@ class SoundProfiler(object):
         if self.validate(profile):
             self.profile = profile
             # profile data against known sounds
-            self.analyze(self.profile)
-            # pass final profile results on to the Alert module
-
+            self.analyze()
         else:
             raise Exception("Profile passed to SoundProfiler was not valid.")
 

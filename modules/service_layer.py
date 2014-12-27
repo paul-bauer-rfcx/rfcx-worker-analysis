@@ -26,7 +26,7 @@ class AnalyzeSound(object):
     def validate(self, key):
         '''Validate: Check JSON string against signed S3 url regex
         '''
-        regex = re.compile("fedcba") # test regex. switch to s3 url.
+        regex = re.compile("https://rfcx-ark.s3-eu-west-1.amazonaws.com/development/guardians/") # test regex. switch to s3 url.
         if regex.findall(key) != None:
             return True
         else:
