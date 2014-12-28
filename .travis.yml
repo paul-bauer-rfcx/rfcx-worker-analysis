@@ -2,9 +2,13 @@ language: python
 python:
   - "2.7"
 
+# configure the virtualenv
+virtualenv:
+  system_site_packages: true
+
 # command to install virtualenv dependencies
-install:
-  - "pip install -r requirements.txt"
+before_install: "sudo apt-get install -qq python-numpy python-scipy"
+install: "pip install -r requirements.txt --use-mirrors"
 
 # command to run setup and tests
 beforescript: true

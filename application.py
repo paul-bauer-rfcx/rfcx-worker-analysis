@@ -4,8 +4,6 @@ import gevent #import monkey; monkey.patch_all()
 import requests
 import json
 
-# import Flask and AWS settings from file
-#import settings
 # import RFCx custom modules via service layer
 from modules import service_layer
 

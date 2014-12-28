@@ -1,13 +1,10 @@
 # RFCx-Worker-Analysis
 
 # Data Analysis
-#numpy==1.9.1
-#matplotlib==1.4.2
-#scipy==0.14.0
 
 # Web Framework
 boto==2.32.1
-Flask==0.10.1
+flask==0.10.1
 gevent==1.0.1
 requests==2.5.0
 
