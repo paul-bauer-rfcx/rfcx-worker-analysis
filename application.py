@@ -13,7 +13,7 @@ application = Flask(__name__)
 # Set to enable tracebacks on Beanstalk log output
 application.debug = True
 
-@application.route('/')
+@application.route('/analyzeSound')
 def hello_world():
     return "Hello, world!"
 
