@@ -1,6 +1,6 @@
 # web server modules
 from flask import Flask, request
-import gevent #import monkey; monkey.patch_all()
+import gevent
 import requests
 import json
 
@@ -8,10 +8,10 @@ import json
 from modules import service_layer
 
 # setup web app instance
-app = Flask(__name__)
+application = Flask(__name__)
 
 # routes to call the correct request handlers
-@app.route('/analyzeSound', methods=['POST'])
+@application.route('/analyzeSound', methods=['POST'])
 def analyze_sound():
     # parse JSON received from SQS
     data = request.get_json()
@@ -22,7 +22,7 @@ def analyze_sound():
     ])
     return """Background worker thread started!"""
 
-@app.route('/updateSoundProfile', methods=['POST'])
+@application.route('/updateSoundProfile', methods=['POST'])
 def update_sound_profile():
     # parse JSON received to get filename/key
     data = request.get_json()
@@ -31,5 +31,5 @@ def update_sound_profile():
     return "Update the sounds from ML."
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    application.run()
 
