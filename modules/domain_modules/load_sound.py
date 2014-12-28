@@ -5,7 +5,6 @@ sound object with the audio and meta data passed in from a device.
 import os
 import random
 import requests
-import scipy
 from scipy.io import wavfile as wav
 from scipy.signal import resample
 
