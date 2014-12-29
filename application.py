@@ -5,7 +5,7 @@ import gevent
 import json
 
 # import RFCx custom modules via service layer
-from modules import service_layer
+# from modules import service_layer
 
 # setup web app instance
 application = Flask(__name__)
@@ -20,9 +20,9 @@ def analyze_sound():
     data = json.loads(request.data)
     key = str(data["guardianAudio"]["uri:"])
     # SL call to analyze the audio linked to given key value
-    gevent.joinall([
-        gevent.spawn(service_layer.AnalyzeSound(key, data))
-    ])
+    # gevent.joinall([
+    #     gevent.spawn(service_layer.AnalyzeSound(key, data))
+    # ])
     return """Background worker thread started!"""
 
 @application.route('/updateSoundProfile', methods=['POST'])
