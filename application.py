@@ -35,6 +35,6 @@ def update_sound_profile():
 
 if __name__ == "__main__":
     try:
-        os.mkdir('./tmp')
+        mkdir('./tmp')
     finally:
         application.run(host='0.0.0.0')
