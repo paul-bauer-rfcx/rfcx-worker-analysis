@@ -29,18 +29,18 @@ def check_stuff():
 #     # ])
 #     return """Background worker thread started!"""
 
-# @application.route('/updateSoundProfile', methods=['POST'])
-# def update_sound_profile():
-#     # parse JSON received to get filename/key
-#     data = request.get_json()
-#     # SL call to analyze the audio linked to given key value
-#     gevent.joinall([gevent.spawn()])
-#     return "Update the sounds from ML."
+@application.route('/updateSoundProfile', methods=['POST'])
+def update_sound_profile():
+    # parse JSON received to get filename/key
+    data = json.loads(request.data)
+    # SL call to analyze the audio linked to given key value
+    gevent.joinall([gevent.spawn()])
+    return "Update the sounds from ML."
 
 if __name__ == "__main__":
-    # try:
-    #     mkdir('./tmp')
-    # except:
-    #     pass
-    # finally:
-    application.run(host='0.0.0.0')
+    try:
+        mkdir('./tmp')
+    except:
+        pass
+    finally:
+        application.run(host='0.0.0.0')
