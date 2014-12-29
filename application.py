@@ -17,7 +17,7 @@ application.debug = True
 @application.route('/analyzeSound', methods=['POST'])
 def analyze_sound():
     # parse JSON received from SQS
-    data = request.get_json()
+    data = json.loads(request.data)
     key = str(data["guardianAudio"]["uri:"])
     # SL call to analyze the audio linked to given key value
     gevent.joinall([
