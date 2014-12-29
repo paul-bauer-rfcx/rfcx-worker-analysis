@@ -5,7 +5,7 @@ import gevent
 import json
 
 # import RFCx custom modules via service layer
-# from modules import service_layer
+from modules import service_layer
 
 # setup web app instance
 application = Flask(__name__)
@@ -37,7 +37,9 @@ def update_sound_profile():
     # parse JSON received to get filename/key
     data = json.loads(request.data)
     # SL call to analyze the audio linked to given key value
-    res = True
+    gevent.joinall([
+        gevent.spawn(service_layer.UpdateSoundProfile(True, True))
+    ])
     return "Update the sounds from ML."
 
 if __name__ == "__main__":
