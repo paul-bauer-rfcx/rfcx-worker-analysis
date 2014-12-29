@@ -58,9 +58,9 @@ class UpdateSoundProfile(object):
         '''Validate: Check JSON string against valid profile object
          properties
          '''
-        pass
+        return True
 
     def update(self):
         '''Update. Adds or edits sound profiles in the database.
         '''
-        pass
+        return True
