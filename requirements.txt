@@ -1,5 +1,4 @@
 # RFCx-Worker-Analysis
-numpy==1.9.1
 flask==0.9
 gevent==1.0.1
 requests==2.5.0
