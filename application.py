@@ -1,8 +1,7 @@
 # web server modules
 from flask import Flask, request
-import os
+from os import mkdir
 import gevent
-import requests
 import json
 
 # import RFCx custom modules via service layer
