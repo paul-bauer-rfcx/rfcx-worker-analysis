@@ -6,7 +6,6 @@ import gevent
 import json
 
 # import RFCx custom modules via service layer
-sys.path.insert(0, '/opt/python/current/rfcx-analysis')
 from modules import service_layer
 
 # setup web app instance

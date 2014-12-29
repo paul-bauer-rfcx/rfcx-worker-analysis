@@ -45,17 +45,14 @@ import re
 class UpdateSoundProfile(object):
     def __init__(self, profile, settings):
         '''Update Sound Profile Class: Updates or creates sound profile
-         based on ML framework.
-         '''
+        based on ML framework.
+        '''
         pass
 
     def validate(profile, settings):
-        '''Validate: Check JSON string against valid profile object
-         properties
-         '''
+        '''Validate: Check JSON string against valid profile object properties'''
         pass
 
     def update(self):
-        '''Update. Adds or edits sound profiles in the database.
-        '''
+        '''Update. Adds or edits sound profiles in the database.'''
         pass
