@@ -31,6 +31,8 @@ def check_stuff():
 
 @application.route('/updateSoundProfile', methods=['POST'])
 def update_sound_profile():
+    # test importing modules
+    import numpy as np
     # parse JSON received to get filename/key
     data = json.loads(request.data)
     # SL call to analyze the audio linked to given key value
