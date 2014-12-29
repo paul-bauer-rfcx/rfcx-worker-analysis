@@ -33,6 +33,7 @@ def check_stuff():
 def update_sound_profile():
     # test importing modules
     import numpy as np
+    import scipy
     # parse JSON received to get filename/key
     data = json.loads(request.data)
     # SL call to analyze the audio linked to given key value
