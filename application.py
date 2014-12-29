@@ -38,6 +38,8 @@ def check_stuff():
 #     return "Update the sounds from ML."
 
 if __name__ == "__main__":
-    try:
-        mkdir('./tmp')
-    application.run()
+    # try:
+    #     mkdir('./tmp')
+    # except:
+    # finally:
+    application.run(host='0.0.0.0')
