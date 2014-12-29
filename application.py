@@ -40,7 +40,7 @@ def update_sound_profile():
     # gevent.joinall([
     #     gevent.spawn(service_layer.UpdateSoundProfile(True, True))
     # ])
-    service_layer.UpdateSoundProfile(True, True)
+    test = service_layer.UpdateSoundProfile(True, True)
     return "Update the sounds from ML."
 
 if __name__ == "__main__":

@@ -47,7 +47,7 @@ class UpdateSoundProfile(object):
         '''Update Sound Profile Class: Updates or creates sound profile
          based on ML framework.
          '''
-         pass
+        pass
 
     def validate(profile, settings):
         '''Validate: Check JSON string against valid profile object
