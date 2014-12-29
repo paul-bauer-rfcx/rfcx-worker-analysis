@@ -41,5 +41,6 @@ if __name__ == "__main__":
     # try:
     #     mkdir('./tmp')
     # except:
+    #     pass
     # finally:
     application.run(host='0.0.0.0')
