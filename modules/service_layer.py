@@ -47,20 +47,15 @@ class UpdateSoundProfile(object):
         '''Update Sound Profile Class: Updates or creates sound profile
          based on ML framework.
          '''
-        if self.validate(profile, settings):
-            self.profile = profile
-            self.settings = settings
-        else:
-            raise Exception("Profile and/or Settings passed to UpdateSoundProfile are not valid.")
-        self.update()
+         pass
 
     def validate(profile, settings):
         '''Validate: Check JSON string against valid profile object
          properties
          '''
-        return True
+        pass
 
     def update(self):
         '''Update. Adds or edits sound profiles in the database.
         '''
-        return True
+        pass

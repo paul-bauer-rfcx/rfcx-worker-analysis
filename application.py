@@ -37,9 +37,10 @@ def update_sound_profile():
     # parse JSON received to get filename/key
     data = json.loads(request.data)
     # SL call to analyze the audio linked to given key value
-    gevent.joinall([
-        gevent.spawn(service_layer.UpdateSoundProfile(True, True))
-    ])
+    # gevent.joinall([
+    #     gevent.spawn(service_layer.UpdateSoundProfile(True, True))
+    # ])
+    service_layer.UpdateSoundProfile(True, True)
     return "Update the sounds from ML."
 
 if __name__ == "__main__":
