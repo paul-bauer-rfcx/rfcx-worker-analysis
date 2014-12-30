@@ -32,7 +32,7 @@ class AnalyzeSound(object):
     def validate(self, key):
         '''Validate: Check JSON string against signed S3 url regex
         '''
-        regex = re.compile("https://rfcx-ark.s3-eu-west-1.amazonaws.com/")
+        regex = re.compile("")
         if regex.findall(key) != None:
             return True
         else:
@@ -45,10 +45,11 @@ class AnalyzeSound(object):
 
         # setup logging
         logger = logging.getLogger("services")
-        logger.addHandler(logging.StreamHandler())  
+        logger.addHandler(logging.FileHandler("test.log"))  
         # Todo: add a handler to log in a file 
         # Todo: set logging level via config file / command line  
         logger.setLevel(level=logging.INFO)
+        logger.info("hi")
 
         # basic workflow 
 
@@ -66,8 +67,8 @@ class AnalyzeSound(object):
 
         # (5) use ML to determine whether the sound is an anomaly 
         # Todo: add requirements for anomaly detection, then add these lines
-        repo = AnomalyDetectionRepo() 
-        AnomalyDetector(logger, repo).determine_anomaly(prof_meta)
+        repo = db_layer.AnomalyDetectionRepo() 
+        anomaly_detection.AnomalyDetector(logger, repo).determine_anomaly(prof_meta)
 
         # (6) 
         prof_final = sound_profiling.SoundProfiler(prof_meta).profile

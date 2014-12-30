@@ -16,6 +16,6 @@ class AnomalyDetectionRepo:
 		# Todo: get model from redis
 		return self.model 
 
-	def udpate_model(self, station, model): 
+	def update_model(self, station, model): 
 		# Todo: save model to redis 
 		self.model = model 

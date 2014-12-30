@@ -20,21 +20,22 @@ class AnomalyDetector(object):
         '''
         station = profile.station # just for convenience 
         # Todo: make it thread-safe 
-        model = repository.getModel(station)        
+        model = self.repo.get_model(station)        
 
         if model == None: 
             model = Gaussian() 
             self.logger.info("Created new anomaly detection model for station '%s'", station)
 
         # Todo: add 2d array support, for now we just use the first column
-        spectrum = profile.spectrum[:,0]
+        spectrum = profile.spectrum.complex_arr[:,0]
+        
+				# learn features for later modelling 
+        model.train(spectrum)
+        self.repo.update_model(station, model)
+        self.logger.info("Updated anomaly detection model for station '%s'", station)
+
         profile.anomaly_prob = model.calculate_prob(spectrum)
         self.logger.info("Anomaly probability at station '%s' is {:4.03f}", station, profile.anomaly_prob)
-
-        # learn features for later modelling 
-        model.train(spectrum)
-        repository.update(station, model)
-        self.logger.info("Updated anomaly detection model for station '%s'", station)
 
 
 """
@@ -93,6 +94,7 @@ class Gaussian(SignalLikelihood):
         Updates the mean and variance of the gaussian model capturing the 
         ambient sound scenery. 
         """
+        features = np.absolute(features)
         if self.mean is None:
             # no previous mean or variance exist 
             self.mean = features
@@ -125,9 +127,12 @@ class Gaussian(SignalLikelihood):
         Calculates the probability that the signal described by the 
         features is an ambient sound. 
         """ 
+        features = np.absolute(features)
         if np.any(self.var == 0): 
             return 0 
-
+        print features
+        print self.mean
+        print self.var
         # this is a vectorized version of the pdf of a normal distribution for each frequency amplitude
         # it returns one probability for each of the signal's frequency amplitudes 
         probs = np.exp(-(features-self.mean)**2/(2.*self.var**2)) / (math.sqrt(math.pi * 2.) * self.var)
