@@ -66,8 +66,8 @@ class AnalyzeSound(object):
 
         # (5) use ML to determine whether the sound is an anomaly 
         # Todo: add requirements for anomaly detection, then add these lines
-        #repo = AnomalyDetectionRepo() 
-        #AnomalyDetector(logger, repo).determine_anomaly(prof_meta)
+        repo = AnomalyDetectionRepo() 
+        AnomalyDetector(logger, repo).determine_anomaly(prof_meta)
 
         # (6) 
         prof_final = sound_profiling.SoundProfiler(prof_meta).profile
