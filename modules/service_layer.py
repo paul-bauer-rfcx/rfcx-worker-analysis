@@ -45,7 +45,7 @@ class AnalyzeSound(object):
 
         # setup logging
         logger = logging.getLogger("services")
-        logger.addHandler(logging.FileHandler("../logs/services.log"))  
+        logger.addHandler(logging.FileHandler("./logs/services.log"))  
         # Todo: add a handler to log in a file 
         # Todo: set logging level via config file / command line  
         logger.setLevel(level=logging.INFO)
