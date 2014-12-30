@@ -22,16 +22,16 @@ def check_stuff():
 # routes to call the correct request handlers
 @application.route('/analyzeSound', methods=['POST'])
 def analyze_sound():
-    if request.mime_type == 'application/json' and request.content_length <= 1024**2:
+    if request.mimetype == 'application/json' and request.content_length <= 1024**2:
         # message is JSON and smaller than 1 megabyte (to prevent overload attacks)
-        try:
-            decoded = base64.b64decode(request.get_data()) # parse JSON received from SQS
+        try: # attempt std way to pull data
+            decoded = request.get_data() # parse JSON received from SQS
         except (ValueError, TypeError), e:
             # TO DO: add logging and logic for JSON decoding failures
             # error_log.exception('Failed to decode JSON from SQS')
             raise Exception('''***** Failed to decode JSON from SQS *****\n%s'''%(e))
         else:
-            data = json.loads(json.loads(decoded)["Message"])
+            json_data = json.loads(json.loads(decoded)["Message"])
             key = str(json_data["guardianAudio"]["uri:"])
             # SL call to analyze the audio linked to given key value
             # gevent.joinall([
