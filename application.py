@@ -7,7 +7,7 @@ import json
 import base64
 
 # import RFCx custom modules via service layer
-from modules import service_layer
+# from modules import service_layer
 
 # setup web app instance
 application = Flask(__name__)
@@ -22,26 +22,19 @@ def check_stuff():
 # routes to call the correct request handlers
 @application.route('/analyzeSound', methods=['POST'])
 def analyze_sound():
-    if request.mimetype == 'application/json' and request.content_length <= 1024**2:
-        # message is JSON and smaller than 1 megabyte (to prevent overload attacks)
-        try: # attempt std way to pull data
-            decoded = request.get_data() # parse JSON received from SQS
-        except (ValueError, TypeError), e:
-            # TO DO: add logging and logic for JSON decoding failures
-            # error_log.exception('Failed to decode JSON from SQS')
-            raise Exception('''***** Failed to decode JSON from SQS *****\n%s'''%(e))
-        else:
-            json_data = json.loads(json.loads(decoded)["Message"])
-            key = str(json_data["guardianAudio"]["uri:"])
-            # SL call to analyze the audio linked to given key value
-            # gevent.joinall([
-            #     gevent.spawn(service_layer.AnalyzeSound(key, data))
-            # ])
-            return """Background worker thread started!"""
-    else:
-        # TO DO: add logging and logic for JSON / SIZE check failures
-        # error_log.exception('SQS data was either not JSON or too large')
-        raise Exception('SQS data was either not JSON or too large')
+    try:
+        decoded = request.get_data() # parse JSON received from SQS
+    except (TypeError, ValueError), e:
+        # TO DO: add logging and logic for JSON decoding failures
+        # error_log.exception('Failed to decode JSON from SQS')
+        raise Exception('''***** Failed to decode JSON from SQS *****\n%s'''%(e))
+    json_data = json.loads(json.loads(decoded)["Message"])
+    key = str(json_data["guardianAudio"]["uri:"])
+    # SL call to analyze the audio linked to given key value
+    # gevent.joinall([
+    #     gevent.spawn(service_layer.AnalyzeSound(key, data))
+    # ])
+    return """Background worker thread started!"""
 
 
 @application.route('/updateSoundProfile', methods=['POST'])
