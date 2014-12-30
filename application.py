@@ -7,7 +7,7 @@ import json
 import base64
 
 # import RFCx custom modules via service layer
-# from modules import service_layer
+from modules import service_layer
 
 # setup web app instance
 application = Flask(__name__)
@@ -32,12 +32,16 @@ def analyze_sound():
             # error_log.exception('Failed to decode JSON from SQS')
             raise Exception('''***** Failed to decode JSON from SQS *****\n%s'''%(e))
     json_data = json.loads(json.loads(decoded)["Message"])
+
     # key = str(json_data["guardianAudio"]["uri:"])
+    # mocking test data for processing while true json post meta-data is unavailable
+    key = "https://rfcx-ark.s3-eu-west-1.amazonaws.com/development/guardians/fedcba/2014/12/23/fedcba-2014-12-23T14-24-49.wav?Expires=1419944732&AWSAccessKeyId=AKIAJ2EUNGZ4RMEMMWMA&Signature=NYkA8yA5QE%2FTbwHu9cVrB8eNr%2BI%3D"
+    test_data = json.loads('{"guardianAudio": { "id": "60819a58-69e9-4253-87bf-eb462aa846b2", "uri:": "https://rfcx-ark.s3-eu-west-1.amazonaws.com/development/guardians/fedcba/2014/12/23/fedcba-2014-12-23T14-24-49.wav?Expires=1419944732&AWSAccessKeyId=AKIAJ2EUNGZ4RMEMMWMA&Signature=NYkA8yA5QE%2FTbwHu9cVrB8eNr%2BI%3D", "createdAt": "2014-12-23T13:46:42.311Z", "lengthMilliseconds": 150000, "checkIn": { "id": "806dfafk-ghss-3423-bdh3-dkvnkdoskndk", "createdAt": "2014-12-23T13:46:42.311Z", "ambientTemperature": 30, "guardian": { "id": "vhdsdfehfoks", "latitude": 3.6141375, "longitude": 14.2108033 }}}}')
     # SL call to analyze the audio linked to given key value
     # gevent.joinall([
-    #     gevent.spawn(service_layer.AnalyzeSound(key, data))
+    #     gevent.spawn(service_layer.AnalyzeSound(key, test_data))
     # ])
-    return """Background worker thread started!"""
+    return """Background worker thread started!""", 202 # 202-accepted but not completed
 
 
 @application.route('/updateSoundProfile', methods=['POST'])
