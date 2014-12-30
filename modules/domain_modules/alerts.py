@@ -4,6 +4,26 @@ known sound has been detected.
 
 import requests
 import json
+import logging 
+
+class AlertSystem(object): 
+    def __init__(self): 
+        self.alerts = []
+
+    def add_alert_type(self, alert_type): 
+        self.append(alert)
+
+    def fire_alert(self, profile): 
+        for alert_type in self.alerts:
+            alert
+
+
+class LogAlert(object):
+    def fire_alert(self, profile): 
+        logger = self.logger = logging.getLogger(__name__)
+        logger.debug('AlertSystem - profile classification %s', 
+            profile.classification)
+
 
 class Alert(object):
     '''Alert Class. Defines how the framework should respond to a given

@@ -41,10 +41,14 @@ def update_sound_profile():
     # test = service_layer.UpdateSoundProfile(True, True)
     return "Update the sounds from ML."
 
-if __name__ == "__main__":
+def main(argv): 
     try:
         mkdir('./tmp')
     except:
         pass
     finally:
         application.run(host='0.0.0.0')
+
+
+if __name__ == "__main__":
+    main(sys.argv[1:])

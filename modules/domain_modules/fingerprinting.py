@@ -24,6 +24,7 @@ class Fingerprinter(object):
         profile.classification = "chainsaw"
 
 
+# Todo: refactor - seperation of concerns
 class Profile(object):
     ''''Profile Class. Holds all data needed to do an analysis of audio sample.'''
     def __init__(self, spectrum):
@@ -31,3 +32,13 @@ class Profile(object):
         self.type = "unknown"
         self.classification = "unknown"
         self.spectrum = spectrum
+        self.peaks = None  
+        self.station = "A1"
+        self.anomaly_prob = 0.0
+
+    def getPeaks(self): 
+        if self.peaks == None:
+            # replace by Paul's peak finding method 
+            self.peaks = [1, 2, 3]
+
+        return self.peaks
