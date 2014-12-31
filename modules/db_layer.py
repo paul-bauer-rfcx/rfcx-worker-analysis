@@ -67,6 +67,8 @@ class AnomalyDetectionRepo:
 		#self.model = model
 		meanL= model['meanL']
 		varianceL= model['varianceL']
+		self.r.delete(meanLZ)
+		self.r.delete(varianceLZ)
 		self.r.rpush(meanLZ, *meanL)
 		self.r.rpush(varianceLZ, *varianceL)
 		#s_meanL= []
