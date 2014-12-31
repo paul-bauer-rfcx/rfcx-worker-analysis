@@ -29,12 +29,9 @@ def main():
 
 	# download / read sound file 
 	aa = service_layer.AcquireAudio(logger)
-	sound = None 
-	if args.local: 
-		sound = aa.read(args.URL, args.guardian_ID)
-	else: 
-		sound = aa.download(args.URL, args.guardian_ID)
-
+	download_func = aa.read if args.local else aa.download
+	sound = download_func(args.URL, args.guardian_ID)
+	
 	# fork if background option is set 
 	if args.background and os.name != "nt": 
 		newpid = os.fork()
