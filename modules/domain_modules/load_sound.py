@@ -12,32 +12,12 @@ class Sound(object):
     """
     waveform container
     """
-    def __init__(self, key, meta_data):
-        self.s3_key = key
-        # validate JSON meta data passed in
-        if self.validate(meta_data):
-            self.fp = download_file(self.s3_key) # grab the file from S3 to local
-            try:
-                self.read(self.fp) # read in the sound to a numpy array
-            except:
-                raise Exception("""Error reading the downloaded file to numpy array: %s""" % self.s3_key)
-            else:
-                os.remove(self.fp) # remove temp audio file
-
-    def validate(self, meta_data):
-        '''validate the JSON input received by populating meta data for object'''
-        try:
-            self.start_time = str(meta_data['guardianAudio']['checkIn']['createdAt'])
-            self.duration_ms = int(meta_data['guardianAudio']['lengthMilliseconds'])
-            self.latitude = str(meta_data['guardianAudio']['checkIn']['guardian']['latitude'])
-            self.longitude = str(meta_data['guardianAudio']['checkIn']['guardian']['longitude'])
-            self.ambientTemp = int(meta_data['guardianAudio']['checkIn']['ambientTemperature'])
-            self.guardian_id = str(meta_data['guardianAudio']['checkIn']['guardian']['id'])
-        except:
-            # raise an exception if any of the meta data is missing or the wrong format.
-            raise Exception("JSON meta data is not the correct format! File/url:%s"%self.s3_key)
-        else:
-            return True
+    def __init__(self, data, samplerate, guardian_id, spectrum = None):
+        self.data = data
+        self.samplerate = samplerate
+        self.duration = float(self.data.shape[0])/self.samplerate
+        self.guardian_id = guardian_id 
+        self.spectrum = spectrum
 
     def read(self, fp):
         ''''''
@@ -55,17 +35,11 @@ class Sound(object):
         s.from_array(resample(self.data, newsample), samplerate)
         return s
 
-    def from_array(self, data, samplerate):
-        self.data = data
-        self.samplerate = samplerate
-        self.duration = float(self.data.shape[0])/self.samplerate
-
-
-def download_file(key):
-    '''download the file from s3 to local instance via requests
+def download_file(url):
+    '''download the file from web to local instance via requests
     '''
-    # grab sound file from s3 to local
-    res = requests.get(key)
+    # grab sound file from web to local fs
+    res = requests.get(url)
     if res.status_code == 200:
         try:
             # write the response content to file on local disk
@@ -73,11 +47,11 @@ def download_file(key):
             with open(fp, 'w') as f:
                 f.write(res.content)
         except:
-            raise Exception("""Error writing the downloaded file to disk: %s""" % key)
+            raise Exception("""Error writing the downloaded file to disk: %s""" % url)
         else:
             return fp
     else:
-        raise Exception("""Error downloading the file from S3: %s""" % key)
+        raise Exception("""Error downloading the file from S3: %s""" % url)
 
 def read_sound(fp):
     """

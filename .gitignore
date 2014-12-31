@@ -63,3 +63,6 @@ config-prod.py
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+
+# diff original files 
+*.orig

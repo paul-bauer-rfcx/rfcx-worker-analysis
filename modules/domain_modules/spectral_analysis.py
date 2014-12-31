@@ -6,6 +6,18 @@ import scipy
 import numpy as np
 import scipy.signal
 
+class SpectralAnalysis: 
+    def __init__(self, step=1000, fft_size = 500, overlap = 250, window = 'hanning'): 
+        self.step = step 
+        self.fft_size = fft_size
+        self.overlap = overlap
+        self.window = window 
+
+    def add_spectrum(self, sound): 
+        sound.spectrum = scipy.signal.welch(sound.data, fs=sound.samplerate, window=self.window, nperseg=self.fft_size, noverlap=self.overlap, return_onesided=True) 
+
+
+
 class Bbox(object):
     '''Bbox Class:
     Object representing a 2D time-freq "slice" of a spectrogram

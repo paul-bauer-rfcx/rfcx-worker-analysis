@@ -4,6 +4,7 @@ known sound has been detected.
 
 import requests
 import json
+import datetime
 
 class Alert(object):
     '''Alert Class. Defines how the framework should respond to a given
@@ -25,11 +26,11 @@ class Alert(object):
         '''
         if self.profile.type == "known":
             service_key = "TEST ONLY - NO API CALL" # get account key from config file
-            guardian_id = self.profile.spectrum.sound.guardian_id
+            guardian_id = self.profile.guardian_id
             snd_class = self.profile.classification
             # TO DO: pull date/time from spectrum slice and sound start time
-            date_time = self.profile.spectrum.sound.start_time
-            incident_key = guardian_id +'-'+snd_class+'-'+date_time
+            date_time = str(datetime.datetime.now())
+            incident_key = guardian_id +'-'+snd_class+'-'+ date_time
             # Send an alert event to the 3rd party API via JSON data
             url = 'http://localhost/:5000' #'https://events.pagerduty.com/generic/2010-04-15/create_event.json'
             payload = '''{

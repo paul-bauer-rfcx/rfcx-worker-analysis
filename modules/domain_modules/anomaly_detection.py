@@ -18,24 +18,24 @@ class AnomalyDetector(object):
         '''
         determines the probability for anomalies
         '''
-        station = profile.station # just for convenience 
+        guardian_id = profile.guardian_id # just for convenience 
         # Todo: make it thread-safe 
-        model = self.repo.get_model(station)        
+        model = self.repo.get_model(guardian_id)        
 
         if model == None: 
             model = Gaussian() 
-            self.logger.info("Created new anomaly detection model for station '%s'", station)
+            self.logger.info("Created new anomaly detection model for guardian_id '%s'", guardian_id)
 
         # Todo: add 2d array support, for now we just use the first column
-        spectrum = profile.spectrum.complex_arr[:,0]
+        spectrum = profile.spectrum
         
-				# learn features for later modelling 
+		# learn features for later modelling 
         model.train(spectrum)
-        self.repo.update_model(station, model)
-        self.logger.info("Updated anomaly detection model for station '%s'", station)
+        self.repo.update_model(guardian_id, model)
+        self.logger.info("Updated anomaly detection model for guardian_id '%s'", guardian_id)
 
         profile.anomaly_prob = model.calculate_prob(spectrum)
-        self.logger.info("Anomaly probability at station '%s' is {:4.03f}", station, profile.anomaly_prob)
+        self.logger.info("Anomaly probability at guardian_id '%s' is %f", guardian_id, profile.anomaly_prob)
 
 
 """
