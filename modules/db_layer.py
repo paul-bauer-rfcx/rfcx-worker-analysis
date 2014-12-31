@@ -1,6 +1,7 @@
 '''
 Contains repositories for domain modules 
 ''' 
+import random
 import uuid
 import redis
 def c(s):
@@ -45,15 +46,65 @@ class AnomalyDetectionRepo:
 		no model exists'''
 		stationHZ= self.r.hget(self.baseH, station)
 		stationH= self.r.hgetall(stationHZ)
-		return stationHZ
+		meanLZ= stationH['meanLZ']
+		varianceLZ= stationH['varianceLZ']
+		meanL= self.r.lpop(meanLZ)
+		varianceL= self.r.lpop(varianceLZ)
+		# will need to cast these back to proper floats first
+		# and may need to do something about precision
+		return {'meanL': meanL, 'varianceL': varianceL}
 
 
 	def update_model(self, station, model): 
 		# Todo: save model to redis 
-		#self.model = model 
+		stationHZ= self.r.hget(self.baseH, station)
+		stationH= self.r.hgetall(stationHZ)
+		meanLZ= stationH['meanLZ']
+		varianceLZ= stationH['varianceLZ']
+
+
+
+
+		#self.model = model
+		meanL= model['meanL']
+		varianceL= model['varianceL']
+		self.r.lpush(meanLZ, meanL)
+		self.r.lpush(varianceLZ, varianceL)
+		#s_meanL= []
+		#s_varianceL= []
+		#for i in meanL:
+			#self.r.
+			#x= str(i)
+			#s_meanL.append(x)
+		#for j in varianceL:
+			#y= str(j)
+			#s_varianceL.append(y)
+		#c(s_meanL)
+		# not really necessary as redis is going to cast those to strings automatically.
+
+
 		# here we assume station is a string and model looks like:
 		# model= {'meanL': [bunch of floats], 'varianceL' [bunch of floats] }
 
+
 x= AnomalyDetectionRepo()
-x.register_station("station1")
+station= "station1"
+x.register_station(station)
+
+meanL= []
+varianceL= []
+for i in range(0, 499):
+	w=random.random()
+	u=random.random()
+	meanL.append(w)
+	varianceL.append(u)
+#c(meanL)
+#c(varianceL)
+stub= {'meanL': meanL, 'varianceL': varianceL}
+x.update_model(station, stub)
+
+z= x.get_model(station)
+c(z['meanL'])
+c("cool")
+c(z['varianceL'])
 
