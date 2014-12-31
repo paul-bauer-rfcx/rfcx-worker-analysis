@@ -24,9 +24,15 @@ class Service(object):
 
 class AcquireAudio(Service):
     def read(self, fs, guardian_id):
-        self.logger.info("Reading sound file '%s'", fs)
-        data, samplerate = load_sound.read_sound(fs)
-        return load_sound.Sound(data,samplerate, guardian_id)
+        self.logger.info("""Reading sound file %s""" % (fs))
+        # TO DO: Return read success/fail for Node to handle local file and SQS
+        try:
+            data, samplerate = load_sound.read_sound(fs)
+        except (IOError), e:
+            self.logger.error("""Read-in failed for file %s:\n %s""" % (fs, e))
+        else:
+            self.logger.info("Read-in successful for file %s""" % (fs))
+            return load_sound.Sound(data,samplerate, guardian_id)
 
 class AnalyzeSound(Service):
     def __init__(self, logger, spectral_analyzer=spectral_analysis.SpectralAnalysis() ):
@@ -40,7 +46,7 @@ class AnalyzeSound(Service):
         # basic workflow
 
         # (1) spectral analysis
-        self.logger.info("Performing spectral analyis for guardian '%s' ", sound.guardian_id)
+        self.logger.info("""Performing spectral analyis for guardian %s""" % (sound.guardian_id)
         self.spec_analyzer.add_spectrum(sound)
 
         # (2) create an audio finger print
