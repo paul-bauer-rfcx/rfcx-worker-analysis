@@ -3,9 +3,9 @@
 import sys
 import argparse
 import logging
+import logging.config
 from modules import service_layer
 import os
-
 
 def parse_arguments():
 	parser = argparse.ArgumentParser(description='Analyze sound file')
@@ -29,8 +29,8 @@ def parse_arguments():
 
 def setup_logging(local=False):
 	logger = logging.getLogger("services")
-	logger.addHandler(logging.StreamHandler())
-	logger.addHandler(logging.FileHandler("logs/services.log"))
+	# load logging settings
+	logging.config.fileConfig('logging.conf')
 	# Todo: set logging level via config file / command line
 	if local:
 		logger.setLevel(level=logging.DEBUG)

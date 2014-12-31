@@ -28,8 +28,9 @@ class AcquireAudio(Service):
         # TO DO: Return read success/fail for Node to handle local file and SQS
         try:
             data, samplerate = load_sound.read_sound(fs)
-        except (IOError), e:
+        except Exception, e:
             self.logger.error("""Read-in failed for file %s:\n %s""" % (fs, e))
+            raise Exception("Read-in error. Analysis terminated.")
         else:
             self.logger.info("Read-in successful for file %s""" % (fs))
             return load_sound.Sound(data,samplerate, guardian_id)
@@ -46,7 +47,7 @@ class AnalyzeSound(Service):
         # basic workflow
 
         # (1) spectral analysis
-        self.logger.info("""Performing spectral analyis for guardian %s""" % (sound.guardian_id)
+        self.logger.info("""Performing spectral analyis for guardian %s""" % (sound.guardian_id))
         self.spec_analyzer.add_spectrum(sound)
 
         # (2) create an audio finger print
