@@ -4,7 +4,7 @@ Contains repositories for domain modules
 import random
 import uuid
 import redis
-def c(s):
+def c(*s):
 	print s
 
 class AnomalyDetectionRepo: 
@@ -28,18 +28,14 @@ class AnomalyDetectionRepo:
 		stationHZ= uuid.uuid4()
 		meanLZ= uuid.uuid4()
 		varianceLZ= uuid.uuid4()
-		c(stationHZ)
-		c(station)
-		c(self.r)
 
 		self.r.hset(self.baseH, station, stationHZ)
 		x= self.r.hget(self.baseH, station)
-		c(x)
+
 		stationH= {'varianceLZ': varianceLZ, 'meanLZ': meanLZ}
 		self.r.hmset(stationHZ, stationH)
 		y= self.r.hgetall(stationHZ)
-		c(y)
-		c("and that's it we're good to go.")
+
 
 	def get_model(self, station): 
 		''' returns the current model or None, if
@@ -48,10 +44,22 @@ class AnomalyDetectionRepo:
 		stationH= self.r.hgetall(stationHZ)
 		meanLZ= stationH['meanLZ']
 		varianceLZ= stationH['varianceLZ']
-		meanL= self.r.lpop(meanLZ)
-		varianceL= self.r.lpop(varianceLZ)
-		# will need to cast these back to proper floats first
-		# and may need to do something about precision
+		s_meanL= self.r.lrange(meanLZ, 0, -1)
+		s_varianceL= self.r.lrange(varianceLZ, 0, -1)
+
+		c("type of s_varianceL", type(s_varianceL))
+
+		c('length')
+		c(len(s_varianceL))
+		meanL= []
+		varianceL= []
+		for i in s_meanL:
+			f= float(i)
+			meanL.append(f)
+		for j in s_varianceL:
+			g= float(j)
+			varianceL.append(g)
+
 		return {'meanL': meanL, 'varianceL': varianceL}
 
 
@@ -62,14 +70,11 @@ class AnomalyDetectionRepo:
 		meanLZ= stationH['meanLZ']
 		varianceLZ= stationH['varianceLZ']
 
-
-
-
 		#self.model = model
 		meanL= model['meanL']
 		varianceL= model['varianceL']
-		self.r.lpush(meanLZ, meanL)
-		self.r.lpush(varianceLZ, varianceL)
+		self.r.lpush(meanLZ, *meanL)
+		self.r.lpush(varianceLZ, *varianceL)
 		#s_meanL= []
 		#s_varianceL= []
 		#for i in meanL:
@@ -104,7 +109,8 @@ stub= {'meanL': meanL, 'varianceL': varianceL}
 x.update_model(station, stub)
 
 z= x.get_model(station)
-c(z['meanL'])
+#c(z['meanL'])
 c("cool")
-c(z['varianceL'])
+#c(z['varianceL'])
+c("type of a given value in varianceL ",type(z['varianceL'][4]))
 
