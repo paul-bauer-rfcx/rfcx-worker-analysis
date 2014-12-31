@@ -11,8 +11,6 @@ class AnomalyDetectionRepo:
 	'''
 	Now working with Redis,...
 	'''
-	
-
 
 	def __init__(self):
 		self.model = None
@@ -46,11 +44,9 @@ class AnomalyDetectionRepo:
 		varianceLZ= stationH['varianceLZ']
 		s_meanL= self.r.lrange(meanLZ, 0, -1)
 		s_varianceL= self.r.lrange(varianceLZ, 0, -1)
-
 		c("type of s_varianceL", type(s_varianceL))
+		c("length of varianceL", len(s_varianceL))
 
-		c('length')
-		c(len(s_varianceL))
 		meanL= []
 		varianceL= []
 		for i in s_meanL:
@@ -59,9 +55,7 @@ class AnomalyDetectionRepo:
 		for j in s_varianceL:
 			g= float(j)
 			varianceL.append(g)
-
 		return {'meanL': meanL, 'varianceL': varianceL}
-
 
 	def update_model(self, station, model): 
 		# Todo: save model to redis 
@@ -73,8 +67,8 @@ class AnomalyDetectionRepo:
 		#self.model = model
 		meanL= model['meanL']
 		varianceL= model['varianceL']
-		self.r.lpush(meanLZ, *meanL)
-		self.r.lpush(varianceLZ, *varianceL)
+		self.r.rpush(meanLZ, *meanL)
+		self.r.rpush(varianceLZ, *varianceL)
 		#s_meanL= []
 		#s_varianceL= []
 		#for i in meanL:
@@ -98,19 +92,30 @@ x.register_station(station)
 
 meanL= []
 varianceL= []
-for i in range(0, 499):
+for i in range(0, 500):
 	w=random.random()
 	u=random.random()
 	meanL.append(w)
 	varianceL.append(u)
 #c(meanL)
+c("length of meanL prior to update", len(meanL))
 #c(varianceL)
 stub= {'meanL': meanL, 'varianceL': varianceL}
 x.update_model(station, stub)
 
 z= x.get_model(station)
 #c(z['meanL'])
-c("cool")
 #c(z['varianceL'])
 c("type of a given value in varianceL ",type(z['varianceL'][4]))
+
+problem= 'false'
+for i in range(0, 500):
+	if (  (meanL[i] != z['meanL'][i]) or (varianceL[i] != z['varianceL'][i])):
+		c('problem')
+		problem= 'true'
+
+if (problem == 'true'):
+	c('there was an error in transcription')
+else:
+	c("the arrays outputed are the same as those inputed! ALL GOOD!")
 
