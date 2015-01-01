@@ -12,12 +12,12 @@ class Sound(object):
     """
     waveform container
     """
-    def __init__(self, data, samplerate, guardian_id, spectrum = None):
+    def __init__(self, data, samplerate, guardian_id, audio_id):
         self.data = data
         self.samplerate = samplerate
         self.duration = float(self.data.shape[0])/self.samplerate
-        self.guardian_id = guardian_id 
-        self.spectrum = spectrum
+        self.guardian_id = guardian_id
+        self.file_id = audio_id
 
     def read(self, fp):
         ''''''

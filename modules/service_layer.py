@@ -23,17 +23,17 @@ class Service(object):
         self.logger = logger
 
 class AcquireAudio(Service):
-    def read(self, fs, guardian_id):
-        self.logger.info("""Reading sound file %s""" % (fs))
+    def read(self, fs, guardian_id, audio_id):
+        self.logger.info("""Reading sound file %s""" % (audio_id))
         # TO DO: Return read success/fail for Node to handle local file and SQS
         try:
             data, samplerate = load_sound.read_sound(fs)
         except Exception, e:
-            self.logger.error("""Read-in failed for file %s:\n %s""" % (fs, e))
+            self.logger.error("""Read-in failed for file: %s:\n %s""" % (audio_id, e))
             raise Exception("Read-in error. Analysis terminated.")
         else:
-            self.logger.info("Read-in successful for file %s""" % (fs))
-            return load_sound.Sound(data,samplerate, guardian_id)
+            self.logger.info("Read-in successful for file: %s""" % (audio_id))
+            return load_sound.Sound(data, samplerate, guardian_id, audio_id)
 
 class AnalyzeSound(Service):
     def __init__(self, logger, spectral_analyzer=spectral_analysis.SpectralAnalysis() ):
@@ -45,10 +45,10 @@ class AnalyzeSound(Service):
         and trigger results.
         '''
         # basic workflow
-
         # (1) spectral analysis
-        self.logger.info("""Performing spectral analyis for guardian %s""" % (sound.guardian_id))
+        self.logger.info("""Performing spectral analyis for file: %s""" % (sound.file_id))
         self.spec_analyzer.add_spectrum(sound)
+        self.logger.info("""Completed spectral analyis for file: %s""" % (sound.file_id))
 
         # (2) create an audio finger print
         prof_meta = fingerprinting.Fingerprinter(sound).profile
