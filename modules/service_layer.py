@@ -46,12 +46,12 @@ class AnalyzeSound(Service):
         '''
         # basic workflow
         # (1) spectral analysis
-        self.logger.info("""Performing spectral analyis for file: %s""" % (sound.file_id))
         self.spec_analyzer.add_spectrum(sound)
         self.logger.info("""Completed spectral analyis for file: %s""" % (sound.file_id))
 
         # (2) create an audio finger print
         prof_meta = fingerprinting.Fingerprinter(sound).profile
+        self.logger.info("""Completed fingerprinting for file: %s""" % (sound.file_id))
 
         # (3) classify the sound via known sound sources
         sound_classification.SoundClassifier(self.logger).classify(prof_meta)
@@ -66,6 +66,7 @@ class AnalyzeSound(Service):
 
         # (6) alert if necessary
         alert = alerts.Alert(prof_final)
+        self.logger.info("""Sent all required alerts for file: %s""" % (sound.file_id))
 
 
 class UpdateSoundProfile(object):

@@ -35,32 +35,15 @@ class Sound(object):
         s.from_array(resample(self.data, newsample), samplerate)
         return s
 
-def download_file(url):
-    '''download the file from web to local instance via requests
-    '''
-    # grab sound file from web to local fs
-    res = requests.get(url)
-    if res.status_code == 200:
-        try:
-            # write the response content to file on local disk
-            fp = './tmp/audio_temp_' + str(random.randint(1,1000000)) + '.wav'
-            with open(fp, 'w') as f:
-                f.write(res.content)
-        except:
-            raise Exception("""Error writing the downloaded file to disk: %s""" % url)
-        else:
-            return fp
-    else:
-        raise Exception("""Error downloading the file from S3: %s""" % url)
-
 def read_sound(fp):
     """
     create a normalized float array and datarate from any audo file
     """
-    if fp.endswith('wav'):
+    try:
         samplerate, data = wav.read(fp)
-    else:
-        raise Exception("Unsupported file type was used: %s" % fp[-4:])
+    except Exception, e:
+        self.logger.error("""Unsupported file type was used: %s\n %s""" % (audio_id, e))
+        raise Exception
     if len(data.shape)>1:
         data = data[:, 0]
     data = data.astype('float64')
