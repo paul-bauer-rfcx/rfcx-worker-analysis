@@ -11,7 +11,8 @@ class SoundProfiler(object):
             # profile data against known sounds
             self.analyze()
         else:
-            raise Exception("Profile passed to SoundProfiler was not valid.")
+            self.logger.error("""Profile passed to SoundProfiler was not valid: %s\n %s""" % (audio_id, e))
+            raise Exception
 
     def validate(self, profile):
         '''validate the profile input received'''
