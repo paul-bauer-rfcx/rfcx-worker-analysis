@@ -19,4 +19,4 @@ class SoundClassifier(object):
             # TO DO: Change placeholder code to compare proper aspects of sound's profile
             if profile.peaks == None:
                 profile.classification = known_sound
-        self.logger.info("""Classifed file as having sound(s): %s""" % (str(profile.classification)))
+                self.logger.info("""Classifed file as having sound(s): %s""" % (str(profile.classification)))

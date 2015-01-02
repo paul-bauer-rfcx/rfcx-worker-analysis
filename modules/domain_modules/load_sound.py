@@ -43,9 +43,10 @@ def read_sound(fp):
         samplerate, data = wav.read(fp)
     except Exception, e:
         self.logger.error("""Unsupported file type was used: %s\n %s""" % (audio_id, e))
-        raise Exception
-    if len(data.shape)>1:
-        data = data[:, 0]
-    data = data.astype('float64')
-    data /= data.max()
-    return data, samplerate
+        exit(1)
+    else:
+        if len(data.shape)>1:
+            data = data[:, 0]
+        data = data.astype('float64')
+        data /= data.max()
+        return data, samplerate

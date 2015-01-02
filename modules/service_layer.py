@@ -25,7 +25,6 @@ class Service(object):
 class AcquireAudio(Service):
     def read(self, fs, guardian_id, audio_id):
         self.logger.info("""Reading sound file %s""" % (audio_id))
-        # TO DO: Return read success/fail for Node to handle local file and SQS
         try:
             data, samplerate = load_sound.read_sound(fs)
         except Exception, e:
@@ -36,8 +35,8 @@ class AcquireAudio(Service):
             return load_sound.Sound(data, samplerate, guardian_id, audio_id)
 
 class AnalyzeSound(Service):
-    def __init__(self, logger, spectral_analyzer=spectral_analysis.SpectralAnalysis() ):
-        self.spec_analyzer = spectral_analyzer
+    def __init__(self, logger):
+        self.spec_analyzer = spectral_analysis.SpectralAnalysis()
         super(AnalyzeSound, self).__init__(logger)
 
     def analyze(self, sound):
