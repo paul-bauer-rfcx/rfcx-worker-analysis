@@ -7,7 +7,7 @@ virtualenv:
   system_site_packages: true
 
 # command to install virtualenv dependencies
-before_install: "sudo apt-get install -qq python-numpy python-scipy"
+before_install: "sudo apt-get install -qq python-numpy python-scipy redis-server && redis-server &;"
 install: "pip install -r requirements.txt"
 
 # command to run setup and tests
