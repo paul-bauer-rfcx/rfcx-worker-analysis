@@ -55,14 +55,17 @@ class AnalyzeSound(Service):
 
         # (3) classify the sound via known sound sources
         sound_classification.SoundClassifier(self.logger).classify(prof_meta)
+        self.logger.info("""Completed fingerprinting for file: %s""" % (sound.file_id))
 
         # (4) use ML to determine whether the sound is an anomaly
         # Todo: add requirements for anomaly detection, then add these lines
         repo = db_layer.AnomalyDetectionRepo()
         anomaly_detection.AnomalyDetector(self.logger, repo).determine_anomaly(prof_meta)
+        self.logger.info("""Completed ML analysis for file: %s""" % (sound.file_id))
 
         # (5)
         prof_final = sound_profiling.SoundProfiler(prof_meta).profile
+        self.logger.info("""Completed profiling for file: %s""" % (sound.file_id))
 
         # (6) alert if necessary
         alert = alerts.Alert(prof_final)

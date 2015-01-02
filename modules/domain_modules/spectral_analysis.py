@@ -2,7 +2,6 @@
 of an audio sample into a spectrum and any related data.
 '''
 
-import scipy
 import numpy as np
 import scipy.signal
 
@@ -15,8 +14,7 @@ class SpectralAnalysis:
         self.window = window
 
     def add_spectrum(self, sound):
-        sound.spectrum = scipy.signal.welch(sound.data, fs=sound.samplerate, window=self.window, nperseg=self.fft_size, noverlap=self.overlap, return_onesided=True)
-
+        sound.spectrum = Spectrum(sound)
 
 class Bbox(object):
     '''Bbox Class:
