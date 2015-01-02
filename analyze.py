@@ -16,13 +16,13 @@ def parse_arguments():
 	# try:
 	# 	parser.add_argument("data_file", type=file, help="Meta-data file.")
 	# except:
-	parser.add_argument("-gid","--guardian_ID", help="ID of the guardian", required=True)
-	parser.add_argument("-aid","--audio_ID", help="ID of the audio file")
+	parser.add_argument("-gid","--guardian_id", help="ID of the guardian", required=True)
+	parser.add_argument("-aid","--audio_id", help="ID of the audio file", required=True)
 	parser.add_argument("-t","--start_time", help="Local time audio recording started. ex.'2014-12-23T13:46:42.311Z'.")
 	parser.add_argument("-dur","--duration_ms", help="ID of the guardian")
 	parser.add_argument("-lat","--latitude", help="ID of the guardian")
 	parser.add_argument("-lon","--longitude", help="ID of the guardian")
-	parser.add_argument("-amb","--ambientTemp", help="ID of the guardian")
+	parser.add_argument("-amb","--ambient_temp", help="ID of the guardian")
 
 	return parser.parse_args()
 
@@ -45,7 +45,7 @@ def main():
 
 	# read sound file from fs passed by sys.argv
 	aa = service_layer.AcquireAudio(logger)
-	sound = aa.read(args.file_path, args.guardian_ID)
+	sound = aa.read(args.file_path, args.guardian_id, args.audio_id)
 
 	# fork if background option is set
 	if args.background and os.name != "nt":

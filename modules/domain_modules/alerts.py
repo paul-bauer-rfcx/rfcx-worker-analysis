@@ -15,7 +15,8 @@ class Alert(object):
             self.profile = profile
             self.alert_status = self.push_alert()
         else:
-            raise Exception("Profile passed to Alert module was not valid.")
+            self.logger.error("""Profile passed to Alert module was not valid: %s\n %s""" % (audio_id, e))
+            raise Exception
 
     def validate(self, profile):
         '''check to be sure that the profile passed in has correct data.'''

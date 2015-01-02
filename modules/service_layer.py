@@ -23,17 +23,17 @@ class Service(object):
         self.logger = logger
 
 class AcquireAudio(Service):
-    def read(self, fs, guardian_id):
-        self.logger.info("""Reading sound file %s""" % (fs))
+    def read(self, fs, guardian_id, audio_id):
+        self.logger.info("""Reading sound file %s""" % (audio_id))
         # TO DO: Return read success/fail for Node to handle local file and SQS
         try:
             data, samplerate = load_sound.read_sound(fs)
         except Exception, e:
-            self.logger.error("""Read-in failed for file %s:\n %s""" % (fs, e))
+            self.logger.error("""Read-in failed for file: %s:\n %s""" % (audio_id, e))
             raise Exception("Read-in error. Analysis terminated.")
         else:
-            self.logger.info("Read-in successful for file %s""" % (fs))
-            return load_sound.Sound(data,samplerate, guardian_id)
+            self.logger.info("Read-in successful for file: %s""" % (audio_id))
+            return load_sound.Sound(data, samplerate, guardian_id, audio_id)
 
 class AnalyzeSound(Service):
     def __init__(self, logger, spectral_analyzer=spectral_analysis.SpectralAnalysis() ):
@@ -45,27 +45,31 @@ class AnalyzeSound(Service):
         and trigger results.
         '''
         # basic workflow
-
         # (1) spectral analysis
-        self.logger.info("""Performing spectral analyis for guardian %s""" % (sound.guardian_id))
         self.spec_analyzer.add_spectrum(sound)
+        self.logger.info("""Completed spectral analyis for file: %s""" % (sound.file_id))
 
         # (2) create an audio finger print
         prof_meta = fingerprinting.Fingerprinter(sound).profile
+        self.logger.info("""Completed fingerprinting for file: %s""" % (sound.file_id))
 
         # (3) classify the sound via known sound sources
         sound_classification.SoundClassifier(self.logger).classify(prof_meta)
+        self.logger.info("""Completed fingerprinting for file: %s""" % (sound.file_id))
 
         # (4) use ML to determine whether the sound is an anomaly
         # Todo: add requirements for anomaly detection, then add these lines
         repo = db_layer.AnomalyDetectionRepo()
         anomaly_detection.AnomalyDetector(self.logger, repo).determine_anomaly(prof_meta)
+        self.logger.info("""Completed ML analysis for file: %s""" % (sound.file_id))
 
         # (5)
         prof_final = sound_profiling.SoundProfiler(prof_meta).profile
+        self.logger.info("""Completed profiling for file: %s""" % (sound.file_id))
 
         # (6) alert if necessary
         alert = alerts.Alert(prof_final)
+        self.logger.info("""Sent all required alerts for file: %s""" % (sound.file_id))
 
 
 class UpdateSoundProfile(object):

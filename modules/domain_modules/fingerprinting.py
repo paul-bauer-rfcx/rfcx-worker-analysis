@@ -11,7 +11,8 @@ class Fingerprinter(object):
             # fingerprint the new profile and return profile object to Alert module
             self.analyze(self.profile)
         else:
-            raise Exception("Spectrum passed to Fingerprinter module was not valid.")
+            self.logger.error("""Spectrum passed to Fingerprinter module was not valid: %s\n %s""" % (audio_id, e))
+            raise Exception
 
     def validate(self, spectrum):
         '''validate the spectrum input received'''
@@ -32,7 +33,7 @@ class Profile(object):
         self.type = "unknown"
         self.classification = "unknown"
         self.spectrum = sound.spectrum
-        self.peaks = None  
+        self.peaks = None
         self.guardian_id = sound.guardian_id
         self.anomaly_prob = 0.0
 
@@ -44,8 +45,8 @@ class Profile(object):
         ix[:] = (a>np.percentile(a,95)) & ix
         return self.spectrum.freqs[ix]
 
-    def getPeaks(self, t, ct=10): 
-        ''' 
+    def getPeaks(self, t, ct=10):
+        '''
         find harmonic peaks in spectrum at given time
         t .. time value (seconds) to sample spectrum
         ct .. number of peaks to return
@@ -61,7 +62,7 @@ class Profile(object):
         mx = 2.0*intvl/dfreq
 
         base = np.arange(ct)+1
-        def f(x):        
+        def f(x):
             ix = base*x[0]
             return 1.0/np.sum(a[ix.astype(int)])
         r = scipy.optimize.brute(f,
