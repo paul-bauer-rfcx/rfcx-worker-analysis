@@ -52,11 +52,11 @@ def main():
 		newpid = os.fork()
 		if newpid != 0:
 			# exit parent
-			sys.os._exit(0)
+			exit(0)
 
 	analyzer = service_layer.AnalyzeSound(logger)
 	analyzer.analyze(sound)
-
+	exit(0)
 
 if __name__ == "__main__":
 	main()

@@ -12,7 +12,7 @@ class Fingerprinter(object):
             self.analyze(self.profile)
         else:
             self.logger.error("""Spectrum passed to Fingerprinter module was not valid: %s\n %s""" % (audio_id, e))
-            raise Exception
+            exit(1)
 
     def validate(self, spectrum):
         '''validate the spectrum input received'''
