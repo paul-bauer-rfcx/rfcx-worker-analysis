@@ -29,8 +29,8 @@ class AcquireAudio(Service):
         try:
             data, samplerate = load_sound.read_sound(fs)
         except Exception, e:
-            self.logger.error("""Read-in failed for file: %s:\n %s""" % (audio_id, e))
-            raise Exception("Read-in error. Analysis terminated.")
+            self.logger.error("""Read-in failed for file: %s\n\t%s""" % (audio_id, e))
+            exit(1)
         else:
             self.logger.info("Read-in successful for file: %s""" % (audio_id))
             return load_sound.Sound(data, samplerate, guardian_id, audio_id)
