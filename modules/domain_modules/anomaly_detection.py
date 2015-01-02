@@ -27,7 +27,7 @@ class AnomalyDetector(object):
             self.logger.info("""Created new anomaly detection model for guardian_id %s""" % (guardian_id))
 
         # Todo: add 2d array support, for now we just use the first column
-        spectrum = profile.spectrum
+        spectrum = profile.spectrum.complex_arr
 
 		# learn features for later modelling
         model.train(spectrum)
