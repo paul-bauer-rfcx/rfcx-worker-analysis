@@ -4,6 +4,8 @@ Contains repositories for domain modules
 import random
 import uuid
 import redis
+import os
+
 def c(*s):
 	print s
 
@@ -14,7 +16,7 @@ class AnomalyDetectionRepo:
 
 	def __init__(self):
 		self.model = None
-		self.r= redis.StrictRedis(host='localhost', port=6379, db=0)
+		self.r= redis.StrictRedis(host=os.environ["REDIS_HOST"], port=os.environ["REDIS_PORT"], db=os.environ["REDIS_DB"])
 		self.baseH= "baseHash"
 
 	def register_station(self, station):

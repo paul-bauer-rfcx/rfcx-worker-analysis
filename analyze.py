@@ -4,20 +4,23 @@ import sys
 import argparse
 import logging
 import logging.config
-from modules import service_layer
 import os
 import json
 
-# try importing Environmental Variable from file
+
 try:
 	# DEVELOPMENT
 	with open('./env_var_override.properties', 'r') as f:
 		for line in f:
 			tmp = [x.strip() for x in line.split("=")]
-			tmp[0] = tmp[1]
-except ImportError:
+			os.environ[str(tmp[0])] = str(tmp[1])
+except ImportError as e:
 	# PRODUCTION
 	pass
+
+# import custom RFCx Service Layer module
+from modules import service_layer
+
 
 def parse_arguments():
 	parser = argparse.ArgumentParser(description='Analyze sound file')
@@ -69,7 +72,6 @@ def main():
 	args = parse_arguments()
 	meta_data = parse_data_file(args)
 	logger = setup_logging(args.local)
-
 	# read sound file from fs passed by sys.argv
 	aa = service_layer.AcquireAudio(logger)
 	sound = aa.read(args.file_path, meta_data)
