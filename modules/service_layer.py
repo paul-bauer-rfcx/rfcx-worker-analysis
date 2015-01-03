@@ -48,6 +48,8 @@ class AnalyzeSound(Service):
         self.spec_analyzer.add_spectrum(sound)
         self.logger.info("""Completed spectral analyis for file: %s""" % (sound.file_id))
 
+        print sound.spectrum.shape
+
         # (2) create an audio finger print
         prof_meta = fingerprinting.Fingerprinter(sound).profile
         self.logger.info("""Completed fingerprinting for file: %s""" % (sound.file_id))
