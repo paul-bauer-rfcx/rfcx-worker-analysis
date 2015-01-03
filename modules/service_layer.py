@@ -23,16 +23,16 @@ class Service(object):
         self.logger = logger
 
 class AcquireAudio(Service):
-    def read(self, fs, guardian_id, audio_id):
-        self.logger.info("""Reading sound file %s""" % (audio_id))
+    def read(self, fs, meta_data):
+        self.logger.info("""Reading sound file %s""" % (meta_data["audio_id"]))
         try:
             data, samplerate = load_sound.read_sound(fs)
         except Exception, e:
-            self.logger.error("""Read-in failed for file: %s\n\t%s""" % (audio_id, e))
+            self.logger.error("""Read-in failed for file: %s\n\t%s""" % (meta_data["audio_id"], e))
             exit(1)
         else:
-            self.logger.info("Read-in successful for file: %s""" % (audio_id))
-            return load_sound.Sound(data, samplerate, guardian_id, audio_id)
+            self.logger.info("Read-in successful for file: %s""" % (meta_data["audio_id"]))
+            return load_sound.Sound(data, samplerate, meta_data)
 
 class AnalyzeSound(Service):
     def __init__(self, logger):

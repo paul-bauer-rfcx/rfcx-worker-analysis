@@ -1,6 +1,4 @@
 # RFCx-Worker-Analysis
-flask==0.9
-gevent==1.0.1
 requests==2.5.0
 mock==1.0.1
 nose==1.3.4
