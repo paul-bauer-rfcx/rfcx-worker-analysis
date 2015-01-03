@@ -26,8 +26,7 @@ class AnomalyDetector(object):
             model = Gaussian()
             self.logger.info("""Created new anomaly detection model for guardian_id %s""" % (guardian_id))
 
-        # Todo: add 2d array support, for now we just use the first column
-        spectrum = profile.spectrum.complex_arr
+        spectrum = profile.spectrum
 
 		# learn features for later modelling
         model.train(spectrum)
@@ -88,6 +87,9 @@ class Gaussian(SignalLikelihood):
         self.var = None
         self.sumSquareDif = None
         self.n = 0
+        # added placeholder attributes for DB model (TO DO: Fix!)
+        self.meanL = None
+        self.varianceL = None
 
     def train(self, features):
         """

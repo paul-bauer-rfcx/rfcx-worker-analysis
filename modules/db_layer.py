@@ -1,13 +1,13 @@
 '''
-Contains repositories for domain modules 
-''' 
+Contains repositories for domain modules
+'''
 import random
 import uuid
 import redis
 def c(*s):
 	print s
 
-class AnomalyDetectionRepo: 
+class AnomalyDetectionRepo:
 	'''
 	Now working with Redis,...
 	'''
@@ -27,7 +27,7 @@ class AnomalyDetectionRepo:
 		stationH= {'varianceLZ': varianceLZ, 'meanLZ': meanLZ}
 		self.r.hmset(stationHZ, stationH)
 
-	def get_model(self, station): 
+	def get_model(self, station):
 		''' returns the current model or None, if
 		no model exists'''
 		exists= self.r.hexists(self.baseH, station)
@@ -64,8 +64,8 @@ class AnomalyDetectionRepo:
 		stationH= self.r.hgetall(stationHZ)
 		meanLZ= stationH['meanLZ']
 		varianceLZ= stationH['varianceLZ']
-		meanL= model['meanL']
-		varianceL= model['varianceL']
+		# meanL= model['meanL']
+		# varianceL= model['varianceL']
 		self.r.delete(meanLZ)
 		self.r.delete(varianceLZ)
 		self.r.rpush(meanLZ, *meanL)

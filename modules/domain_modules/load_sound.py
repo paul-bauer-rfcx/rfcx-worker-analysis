@@ -12,12 +12,17 @@ class Sound(object):
     """
     waveform container
     """
-    def __init__(self, data, samplerate, guardian_id, audio_id):
+    def __init__(self, data, samplerate, meta_data):
         self.data = data
         self.samplerate = samplerate
         self.duration = float(self.data.shape[0])/self.samplerate
-        self.guardian_id = guardian_id
-        self.file_id = audio_id
+        self.guardian_id = meta_data["guardian_id"]
+        self.file_id = meta_data["audio_id"]
+        self.start_time = meta_data["start_time"]
+        self.duration_ms = meta_data["duration_ms"]
+        self.latitude = meta_data["latitude"]
+        self.longitude = meta_data["longitude"]
+        self.ambient_temp = meta_data["ambient_temp"]
 
     def read(self, fp):
         ''''''
@@ -43,9 +48,10 @@ def read_sound(fp):
         samplerate, data = wav.read(fp)
     except Exception, e:
         self.logger.error("""Unsupported file type was used: %s\n %s""" % (audio_id, e))
-        raise Exception
-    if len(data.shape)>1:
-        data = data[:, 0]
-    data = data.astype('float64')
-    data /= data.max()
-    return data, samplerate
+        exit(1)
+    else:
+        if len(data.shape)>1:
+            data = data[:, 0]
+        data = data.astype('float64')
+        data /= data.max()
+        return data, samplerate
