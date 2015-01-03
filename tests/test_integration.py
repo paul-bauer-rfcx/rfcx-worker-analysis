@@ -1,5 +1,8 @@
 import nose
 # import custom RFCx modules from modules folder
+import os
+import sys
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from modules                import service_layer
 from modules.domain_modules import load_sound
 from modules.domain_modules import spectral_analysis

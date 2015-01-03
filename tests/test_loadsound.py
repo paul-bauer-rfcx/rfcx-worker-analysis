@@ -1,5 +1,8 @@
 import nose
 import mock
+import os
+import sys
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from modules.domain_modules import load_sound
 
 # # setup a stub sound object to test with.
