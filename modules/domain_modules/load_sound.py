@@ -20,8 +20,8 @@ class Sound(object):
         self.file_id = meta_data["audio_id"]
         self.start_time = meta_data["start_time"]
         self.duration_ms = meta_data["duration_ms"]
-        self.latitude = meta_data["latitude"]
-        self.longitude = meta_data["longitude"]
+        self.latitude = meta_data["lat_lng"][0]
+        self.longitude = meta_data["lat_lng"][1]
         self.ambient_temp = meta_data["ambient_temp"]
 
     def read(self, fp):

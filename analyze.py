@@ -10,12 +10,14 @@ import json
 
 # try importing Environmental Variable from file
 try:
-    for line in 'env_var_override.properties':
-    	tmp = [x.strip() for x in line.split("=")]
-		tmp[0] = tmp[1]
-except ImportError as e:
+	# DEVELOPMENT
+	with open('./env_var_override.properties', 'r') as f:
+		for line in f:
+			tmp = [x.strip() for x in line.split("=")]
+			tmp[0] = tmp[1]
+except ImportError:
 	# PRODUCTION
-    pass
+	pass
 
 def parse_arguments():
 	parser = argparse.ArgumentParser(description='Analyze sound file')
@@ -39,13 +41,15 @@ def parse_data_file(args):
 		# parse the data file passed for args
 		for line in args.data_file:
 			tmp = [x.strip() for x in line.split("=")]
+			if tmp[0] in ["lat_lng"]:
+				tmp[1] = tmp[1].split(",")
 			meta_data[tmp[0]] = tmp[1]
 	else:
 		# collect manually given flag agrs
 		meta_data["guardian_id"] = args.guardian_id
 		meta_data["audio_id"] = args.audio_id
 		meta_data["start_time"] = args.start_time
-		meta_data["lat/lng"] = args.lat_lng.split(",")
+		meta_data["lat_lng"] = args.lat_lng.split(",")
 		meta_data["ambient_temp"] = args.ambient_temp
 	return meta_data
 
