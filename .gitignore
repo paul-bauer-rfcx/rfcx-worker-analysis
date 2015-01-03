@@ -64,5 +64,8 @@ config-prod.py
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
 
-# diff original files 
+# diff original files
 *.orig
+
+# env properties file
+env_var_override.properties

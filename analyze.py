@@ -8,6 +8,15 @@ from modules import service_layer
 import os
 import json
 
+# try importing Environmental Variable from file
+try:
+    for line in 'env_var_override.properties':
+    	tmp = [x.strip() for x in line.split("=")]
+		tmp[0] = tmp[1]
+except ImportError as e:
+	# PRODUCTION
+    pass
+
 def parse_arguments():
 	parser = argparse.ArgumentParser(description='Analyze sound file')
 	parser.add_argument("-b","--background", help="run process in background (does not work on windows machines)", action="store_true")
