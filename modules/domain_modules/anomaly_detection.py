@@ -22,7 +22,7 @@ class AnomalyDetector(object):
         # Todo: make it thread-safe
         model = self.repo.get_model(guardian_id)
 
-        if model == None:
+        if model == "no such station!":
             model = Gaussian()
             self.logger.info("""Created new anomaly detection model for guardian_id %s""" % (guardian_id))
 
