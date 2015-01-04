@@ -30,14 +30,14 @@ class AnomalyDetector(object):
 
         # learn features for later modelling
         for column in spectrum.T: 
-            model.train(spectrum)
+            model.train(column)
 
         self.repo.update_model(guardian_id, model)
         self.logger.info("""Updated anomaly detection model for guardian_id %s""" % (guardian_id))
 
         profile.anomaly_prob = 0.0
         for column in spectrum.T: 
-            profile.anomaly_prob = math.max(model.calculate_prob(spectrum), profile.anomaly_prob) 
+            profile.anomaly_prob = max(model.calculate_prob(column), profile.anomaly_prob) 
 
         self.logger.info("""Anomaly probability at guardian_id %s is %f""" % (guardian_id, profile.anomaly_prob))
 
@@ -137,9 +137,7 @@ class Gaussian(SignalLikelihood):
         features = np.absolute(features)
         if np.any(self.var == 0):
             return 0
-        print features
-        print self.mean
-        print self.var
+
         # this is a vectorized version of the pdf of a normal distribution for each frequency amplitude
         # it returns one probability for each of the signal's frequency amplitudes
         probs = np.exp(-(features-self.mean)**2/(2.*self.var**2)) / (math.sqrt(math.pi * 2.) * self.var)
