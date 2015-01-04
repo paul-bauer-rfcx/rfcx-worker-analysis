@@ -13,7 +13,7 @@ from domain_modules import sound_profiling
 from domain_modules import sound_classification
 from domain_modules import anomaly_detection
 from domain_modules import alerts
-
+import matplotlib.pyplot as plt
 
 # Todo: replace logging level by config file or command line options
 
@@ -54,7 +54,7 @@ class AnalyzeSound(Service):
 
         # (3) classify the sound via known sound sources
         sound_classification.SoundClassifier(self.logger).classify(prof_meta)
-        self.logger.info("""Completed fingerprinting for file: %s""" % (sound.file_id))
+        self.logger.info("""Completed classification for file: %s""" % (sound.file_id))
 
         # (4) use ML to determine whether the sound is an anomaly
         # Todo: add requirements for anomaly detection, then add these lines
