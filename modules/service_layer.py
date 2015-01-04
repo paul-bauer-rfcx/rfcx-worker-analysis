@@ -13,7 +13,6 @@ from domain_modules import sound_profiling
 from domain_modules import sound_classification
 from domain_modules import anomaly_detection
 from domain_modules import alerts
-import matplotlib.pyplot as plt
 
 # Todo: replace logging level by config file or command line options
 
