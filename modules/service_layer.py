@@ -65,8 +65,8 @@ class AnalyzeSound(Service):
         prof_final = sound_profiling.SoundProfiler(prof_meta).profile
         self.logger.info("""Completed profiling for file: %s""" % (sound.file_id))
 
-        # (6) alert if necessary
-        alert = alerts.Alert(prof_final)
+        # (6) send alerts if necessary
+        alert = alerts.push_alerts(prof_final)
         self.logger.info("""Sent all required alerts for file: %s""" % (sound.file_id))
 
 
