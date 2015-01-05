@@ -4,10 +4,10 @@ additional audio and spectrum analysis.
 
 class Fingerprinter(object):
     '''Sound Profiler Class.'''
-    def __init__(self, sound):
+    def __init__(self, spectrum):
         # validate the spectrum data passed in
-        if self.validate(sound):
-            self.profile = Profile(sound)
+        if self.validate(spectrum):
+            self.profile = Profile(spectrum)
             # fingerprint the new profile and return profile object to Alert module
             self.analyze(self.profile)
         else:
@@ -28,11 +28,11 @@ class Fingerprinter(object):
 # Todo: refactor - seperation of concerns
 class Profile(object):
     '''Profile Class. Holds all data needed to do an analysis of audio sample.'''
-    def __init__(self, sound):
+    def __init__(self, spectrum):
         self.classification = [] # could have many sounds per audio clip
-        self.spectrum = sound.spectrum
+        self.spectrum = spectrum
         self.peaks = None
-        self.guardian_id = sound.guardian_id
+        self.guardian_id = spectrum.sound.guardian_id
         self.anomaly_prob = 0.0
 
     def getPeaks2(self, t):

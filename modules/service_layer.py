@@ -35,20 +35,18 @@ class AcquireAudio(Service):
 
 class AnalyzeSound(Service):
     def __init__(self, logger):
-        self.spec_analyzer = spectral_analysis.SpectralAnalysis()
         super(AnalyzeSound, self).__init__(logger)
 
     def analyze(self, sound):
         '''Analyze: Processes a wav file into a spectrum, profile it,
         and trigger results.
         '''
-        # basic workflow
         # (1) spectral analysis
-        self.spec_analyzer.add_spectrum(sound)
+        spectrum = spectral_analysis.Spectrum(sound)
         self.logger.info("""Completed spectral analyis for file: %s""" % (sound.file_id))
 
         # (2) create an audio finger print
-        prof_meta = fingerprinting.Fingerprinter(sound).profile
+        prof_meta = fingerprinting.Fingerprinter(spectrum).profile
         self.logger.info("""Completed fingerprinting for file: %s""" % (sound.file_id))
 
         # (3) classify the sound via known sound sources
