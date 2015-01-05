@@ -29,9 +29,7 @@ class Fingerprinter(object):
 class Profile(object):
     '''Profile Class. Holds all data needed to do an analysis of audio sample.'''
     def __init__(self, sound):
-        # test properties
-        self.type = "unknown"
-        self.classification = "unknown"
+        self.classification = [] # could have many sounds per audio clip
         self.spectrum = sound.spectrum
         self.peaks = None
         self.guardian_id = sound.guardian_id
