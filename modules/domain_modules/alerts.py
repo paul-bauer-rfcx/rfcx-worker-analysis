@@ -19,13 +19,13 @@ def push_alerts(profile):
         date_time = str(datetime.datetime.now())
         incident_key = guardian_id +'-'+snd_class+'-'+ date_time
         api_url = 'http://localhost:/5000:' # Send an alert event to API via JSON data
-h           payload = '''{
-            "service_key": %s,
-            "incident_key": %s,
-            "event_type": "trigger",
-            "description": "Detection of sound (%s) by guardian %s on %s",
-            "client": "Rainforest Connection Monitoring Service",
-            "client_url": "http://rfcx.org/",
-            "details": { "ping time": "1500ms", "load avg": 0.75 }
-            }''' % (service_key, incident_key, snd_class, guardian_id, date_time)
+        payload = '''{
+                    "service_key": %s,
+                    "incident_key": %s,
+                    "event_type": "trigger",
+                    "description": "Detection of sound (%s) by guardian %s on %s",
+                    "client": "Rainforest Connection Monitoring Service",
+                    "client_url": "http://rfcx.org/",
+                    "details": { "ping time": "1500ms", "load avg": 0.75 }
+                }''' % (service_key, incident_key, snd_class, guardian_id, date_time)
         api_req = requests.post(api_url, headers={'content-type': 'application/json'}, data=json.dumps(payload))
