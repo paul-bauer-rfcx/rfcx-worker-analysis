@@ -2,14 +2,15 @@
 additional audio and spectrum analysis.
 '''
 
+import numpy as np
+import scipy
+
 class Fingerprinter(object):
     '''Sound Profiler Class.'''
     def __init__(self, spectrum):
         # validate the spectrum data passed in
         if self.validate(spectrum):
             self.profile = Profile(spectrum)
-            # fingerprint the new profile and return profile object to Alert module
-            self.analyze(self.profile)
         else:
             self.logger.error("""Spectrum passed to Fingerprinter module was not valid: %s\n %s""" % (audio_id, e))
             exit(1)
@@ -18,11 +19,11 @@ class Fingerprinter(object):
         '''validate the spectrum input received'''
         return True
 
-    def analyze(self, profile):
+    def analyze(self):
         '''Adds new meta information to the growing audio profile to aid in downstream
         sound classification
         '''
-        profile.classification = "chainsaw"
+        self.profile.classification = "chainsaw"
 
 
 # Todo: refactor - seperation of concerns
