@@ -59,11 +59,21 @@ class Spectrum(object):
         return spc_plot(self, **kwargs)
 
     def to_sound(self):
+        """
+        return a sound object converted from this spectrum
+        """
         data = istft(self.complex_arr, self.sound.samplerate, self.framesz, self.hop)
         s = Sound()
         s.from_array(data, self.sound.samplerate)
         return s
 
+    def timeslice(self, time):
+        """
+        return 1D slice of the decibel array
+        time .. slice location (s)
+        """
+        time_ix = np.argmin(np.abs(self.times-time))
+        return self.db_arr[:, time_ix]
 
 def spc_plot(self, start_freq=None, end_freq=None, start_time=None, end_time=None):
     """
