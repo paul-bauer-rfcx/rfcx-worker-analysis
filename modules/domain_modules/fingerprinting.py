@@ -19,12 +19,6 @@ class Fingerprinter(object):
         '''validate the spectrum input received'''
         return True
 
-    def analyze(self):
-        '''Adds new meta information to the growing audio profile to aid in downstream
-        sound classification
-        '''
-        self.profile.classification = "chainsaw"
-
 
 # Todo: refactor - seperation of concerns
 class Profile(object):
