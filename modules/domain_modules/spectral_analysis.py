@@ -8,6 +8,7 @@ import os
 import scipy.io.wavfile as wav
 import subprocess
 from matplotlib import pyplot as plt
+from load_sound import Sound
 
 class Bbox(object):
     """
@@ -42,7 +43,7 @@ class Spectrum(object):
             sound.data, sound.samplerate, self.framesz, self.hop
         )
         self._calc()
-        self.times = np.linspace(0., self.duration, self.complex_arr.shape[0])
+        self.times = np.linspace(0., self.duration, self.complex_arr.shape[1])
 
     def _calc(self):
         self.db_arr = 20.*np.log10(np.absolute(self.complex_arr))
@@ -63,8 +64,7 @@ class Spectrum(object):
         return a sound object converted from this spectrum
         """
         data = istft(self.complex_arr, self.sound.samplerate, self.framesz, self.hop)
-        s = Sound()
-        s.from_array(data, self.sound.samplerate)
+        s = Sound(data, self.sound.samplerate, self.sound.meta_data)
         return s
 
     def timeslice(self, time):
@@ -189,16 +189,4 @@ def read_sound(fp):
     return data, samplerate
 
 
-def write_sound(fp, data, samplerate):
-    """
-    create audio file from array and datarate
-    guess encoding based on filename extension
-    """
-    if fp.endswith('mp3'):
-        tempname = 'temp.wav'
-        wav.write(tempname, samplerate, data)
-        #lame -q0 -b128 sample.wav  sample.mp3
-        result = subprocess.call(['lame', '-q0', '-b128', tempname, fp])
-        assert(result is 0)
-    if fp.endswith('wav'):
-        wav.write(fp, samplerate, data)
+

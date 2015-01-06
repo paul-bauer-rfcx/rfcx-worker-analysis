@@ -57,3 +57,18 @@ def read_sound(fp):
         data = data.astype('float64')
         data /= data.max()
         return Sound(data, samplerate, {})
+
+
+def write_sound(fp, sound):
+    """
+    create audio file from sound object
+    guess encoding based on filename extension
+    """
+    if fp.endswith('mp3'):
+        tempname = 'temp.wav'
+        wav.write(tempname, sound.samplerate, sound.data)
+        #lame -q0 -b128 sample.wav  sample.mp3
+        result = subprocess.call(['lame', '-q0', '-b128', tempname, fp])
+        assert(result is 0)
+    if fp.endswith('wav'):
+        wav.write(fp, sound.samplerate, sound.data)

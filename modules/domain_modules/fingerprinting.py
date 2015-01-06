@@ -33,7 +33,7 @@ class Profile(object):
         self.classification = [] # could have many sounds per audio clip
         self.spectrum = spectrum
         self.peaks = None
-        self.guardian_id = spectrum.sound.guardian_id
+        self.guardian_id = spectrum.sound.meta_data.get('guardian_id')
         self.anomaly_prob = 0.0
 
     def getPeaks2(self, t):
