@@ -26,7 +26,7 @@ class Sound(object):
 
     def resample(self, newsamplerate):
         """create a new sound object by resampling this one
-        newsamplerate .. sample rate for new sound 
+        newsamplerate .. sample rate for new sound
         """
         newshape = int(self.data.shape[0]*newsamplerate/self.samplerate)
         newdata = resample(self.data, newshape)
@@ -42,7 +42,7 @@ class Sound(object):
         newdata = self.data[start_ix:end_ix]
         return Sound(newdata, self.samplerate, self.meta_data)
 
-def read_sound(fp):
+def read_sound(fp, meta_data):
     """
     create a Sound object from audio file
     """
@@ -56,7 +56,7 @@ def read_sound(fp):
             data = data[:, 0]
         data = data.astype('float64')
         data /= data.max()
-        return Sound(data, samplerate, {})
+        return Sound(data, samplerate, meta_data)
 
 
 def write_sound(fp, sound):

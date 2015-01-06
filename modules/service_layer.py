@@ -25,13 +25,13 @@ class AcquireAudio(Service):
     def read(self, fs, meta_data):
         self.logger.info("""Reading sound file %s""" % (meta_data["audio_id"]))
         try:
-            data, samplerate = load_sound.read_sound(fs)
+            sound = load_sound.read_sound(fs, meta_data)
         except Exception, e:
             self.logger.error("""Read-in failed for file: %s\n\t%s""" % (meta_data["audio_id"], e))
             exit(1)
         else:
             self.logger.info("Read-in successful for file: %s""" % (meta_data["audio_id"]))
-            return load_sound.Sound(data, samplerate, meta_data)
+            return sound
 
 class AnalyzeSound(Service):
     def __init__(self, logger):
@@ -43,7 +43,7 @@ class AnalyzeSound(Service):
         '''
         # (1) spectral analysis
         spectrum = spectral_analysis.Spectrum(sound)
-        self.logger.info("""Completed spectral analyis for file: %s""" % (sound.file_id))
+        self.logger.info("""Completed spectral analyis for file: %s""" % (sound.meta_data['audio_id']))
 
         # (2) create an audio finger print
         # TO DO: Clean-up fingerprinting analysis calls
@@ -51,25 +51,25 @@ class AnalyzeSound(Service):
         fingerprinter.profile.getPeaks(5)
         fingerprinter.analyze() # TO DO: Move this functionality to sound_classification section?
         prof_meta = fingerprinter.profile
-        self.logger.info("""Completed fingerprinting for file: %s""" % (sound.file_id))
+        self.logger.info("""Completed fingerprinting for file: %s""" % (sound.meta_data['audio_id']))
 
         # (3) classify the sound via known sound sources
         sound_classification.SoundClassifier(self.logger).classify(prof_meta)
-        self.logger.info("""Completed classification for file: %s""" % (sound.file_id))
+        self.logger.info("""Completed classification for file: %s""" % (sound.meta_data['audio_id']))
 
         # (4) use ML to determine whether the sound is an anomaly
         # Todo: add requirements for anomaly detection, then add these lines
         repo = db_layer.AnomalyDetectionRepo()
         anomaly_detection.AnomalyDetector(self.logger, repo).determine_anomaly(prof_meta)
-        self.logger.info("""Completed ML analysis for file: %s""" % (sound.file_id))
+        self.logger.info("""Completed ML analysis for file: %s""" % (sound.meta_data['audio_id']))
 
         # (5)
         prof_final = sound_profiling.SoundProfiler(prof_meta).profile
-        self.logger.info("""Completed profiling for file: %s""" % (sound.file_id))
+        self.logger.info("""Completed profiling for file: %s""" % (sound.meta_data['audio_id']))
 
         # (6) send alerts if necessary
         alert = alerts.push_alerts(prof_final)
-        self.logger.info("""Sent all required alerts for file: %s""" % (sound.file_id))
+        self.logger.info("""Sent all required alerts for file: %s""" % (sound.meta_data['audio_id']))
 
 
 class UpdateSoundProfile(object):
