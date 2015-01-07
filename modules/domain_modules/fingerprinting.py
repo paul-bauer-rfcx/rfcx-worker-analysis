@@ -5,6 +5,7 @@ additional audio and spectrum analysis.
 import numpy as np
 import scipy
 
+
 class Fingerprinter(object):
     '''Sound Profiler Class.'''
     def __init__(self, spectrum):
@@ -20,16 +21,17 @@ class Fingerprinter(object):
         return True
 
 
-# Todo: refactor - seperation of concerns
 class Profile(object):
     '''Profile Class. Holds all data needed to do an analysis of audio sample.'''
     def __init__(self, spectrum):
         self.classification = [] # could have many sounds per audio clip
         self.spectrum = spectrum
-        #self.peaks = None
         self.guardian_id = spectrum.sound.meta_data.get('guardian_id')
         self.anomaly_prob = 0.0
         self.harmonic_power = None
+        self.peak_mags = None
+        self.overall_mag = None
+        self.peaks = None
 
     def getPeaks2(self, t):
         ''' get peaks based on relative height (ignore harmonics)
@@ -80,12 +82,11 @@ class Profile(object):
         ix = (base*intvl).astype(int)
         peak_freqs = s.freqs[ix]
         peak_mags = (a[ix]*2+a[ix-1]+a[ix+1])/4.
-
         overall_mag = np.average(a)
-        peaks_mag = np.average(peak_mags)
         #20.*np.log10(np.average(10**(peak_mags/20.)))
 
-        harmonic_power = peaks_mag/overall_mag
+        # update profile values
+        self.peak_mags = np.average(peak_mags)
+        self.harmonic_power = peak_mags/overall_mag
+        self.overall_mag = overall_mag
         self.peaks = peak_freqs
-
-        return self.peaks, peak_mags, harmonic_power
