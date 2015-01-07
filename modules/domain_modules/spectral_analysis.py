@@ -46,7 +46,8 @@ class Spectrum(object):
         self.times = np.linspace(0., self.duration, self.complex_arr.shape[1])
 
     def _calc(self):
-        self.db_arr = 20.*np.log10(np.absolute(self.complex_arr))
+        self.abs_arr = np.absolute(self.complex_arr)
+        self.db_arr = 20.*np.log10(self.abs_arr)
 
     def isolate(self, start_freq=None, end_freq=None, start_time=None, end_time=None):
         bbox = Bbox(self, start_freq, end_freq, start_time, end_time)
@@ -73,33 +74,18 @@ class Spectrum(object):
         time .. slice location (s)
         """
         time_ix = np.argmin(np.abs(self.times-time))
-        return self.db_arr[:, time_ix]
+        return self.abs_arr[:, time_ix]
 
 def spc_plot(self, start_freq=None, end_freq=None, start_time=None, end_time=None):
     """
     generate plot of all of or bbox of spectrogram
     self ... spectrogam object
     """
-    from matplotlib.ticker import FuncFormatter
     bbox = Bbox(self, start_freq, end_freq, start_time, end_time)
     freq_slice, time_slice = bbox.ix()
-
     x2 = self.db_arr[freq_slice, time_slice]
-
+    # build plot
     plt.clf()
-
-    def freq_fmt(x, pos):
-        #print x, pos, self.freqs[x]
-        return str(self.freqs[x])
-    def time_fmt(x, pos):
-        print x, pos
-        return str(self.times[x])
-    yformatter = FuncFormatter(freq_fmt)
-    xformatter = FuncFormatter(time_fmt)
-    #plt.gca().yaxis.set_major_formatter(yformatter)
-    #plt.gca().xaxis.set_major_formatter(xformatter)
-
-    #plt.plot(self.times, self.freqs)
     plt.imshow(
         np.clip(x2,0,None),
         extent=[bbox.start_time, bbox.end_time, bbox.start_freq, bbox.end_freq],
@@ -107,13 +93,9 @@ def spc_plot(self, start_freq=None, end_freq=None, start_time=None, end_time=Non
         cmap='gist_heat_r',
     )
     plt.grid(b=True, which='major',linestyle='-', alpha=.5)
-    #plt.rcParams['image.aspect'] = float(x2.shape[0])/x2.shape[1]
     plt.xlabel('Time (s)')
     plt.ylabel('Frequency (Hz)')
     return plt.gcf()
-    #print x.max()
-    #show(x[:1000,:], bound=True, clip=.999)
-
 
 
 def stft(x, fs, framesz, hop):
