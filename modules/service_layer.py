@@ -9,7 +9,6 @@ import os
 from domain_modules import load_sound
 from domain_modules import spectral_analysis
 from domain_modules import fingerprinting
-from domain_modules import sound_profiling
 from domain_modules import sound_classification
 from domain_modules import anomaly_detection
 from domain_modules import alerts
