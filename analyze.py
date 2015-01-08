@@ -29,7 +29,7 @@ def parse_arguments():
 	parser.add_argument("-wav", "--wav_path", help="File path to a Wav audio file")
 	# Try to get meta-data from a file before falling back to flags
 	try:
-		parser.add_argument("-data", "--data_file", help="Meta-data file.")
+		parser.add_argument("-data", "--data_file", type=file, help="Meta-data file.")
 		args = parser.parse_args()
 	except:
 		parser.add_argument("-g","--guardian_id", help="ID of the guardian", required=True)

@@ -28,7 +28,11 @@ class AnomalyDetectionRepo:
         sumSquareDifZ = uuid.uuid4()
         nZ = uuid.uuid4()
         self.r.hset(self.baseH, station, stationHZ)
-        stationH= {'varianceLZ': varianceLZ, 'meanLZ': meanLZ, 'sumSquareDifZ': sumSquareDifZ, 'nZ': nZ}
+        stationH = {'varianceLZ': varianceLZ,
+                    'meanLZ': meanLZ,
+                    'sumSquareDifZ': sumSquareDifZ,
+                    'nZ': nZ
+                    }
         self.r.hmset(stationHZ, stationH)
 
     def toNumpy(self, array):

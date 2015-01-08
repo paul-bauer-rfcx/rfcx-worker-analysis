@@ -26,18 +26,18 @@ class AnomalyDetector(object):
             model = Gaussian()
             self.logger.info("""Created new anomaly detection model for guardian_id %s""" % (guardian_id))
 
-        spectrum = profile.spectrum
+        spectrum = profile.spectrum.complex_arr
 
         # learn features for later modelling
-        for column in spectrum.T: 
+        for column in spectrum.T:
             model.train(column)
 
         self.repo.update_model(guardian_id, model)
         self.logger.info("""Updated anomaly detection model for guardian_id %s""" % (guardian_id))
 
         profile.anomaly_prob = 0.0
-        for column in spectrum.T: 
-            profile.anomaly_prob = max(model.calculate_prob(column), profile.anomaly_prob) 
+        for column in spectrum.T:
+            profile.anomaly_prob = max(model.calculate_prob(column), profile.anomaly_prob)
 
         self.logger.info("""Anomaly probability at guardian_id %s is %f""" % (guardian_id, profile.anomaly_prob))
 
@@ -93,8 +93,8 @@ class Gaussian(SignalLikelihood):
         self.sumSquareDif = sumSquareDif
         self.n = n
 
-    def __eq__(self, other): 
-        return other != None and np.allclose(self.mean, other.mean) and np.allclose(self.var, other.var) and np.allclose(self.sumSquareDif,other.sumSquareDif) and self.n == other.n 
+    def __eq__(self, other):
+        return other != None and np.allclose(self.mean, other.mean) and np.allclose(self.var, other.var) and np.allclose(self.sumSquareDif,other.sumSquareDif) and self.n == other.n
 
     def train(self, features):
         """

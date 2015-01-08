@@ -44,8 +44,6 @@ class AnalyzeSound(Service):
         spectrum = spectral_analysis.Spectrum(sound)
         self.logger.info("""Completed spectral analyis for file: %s""" % (sound.meta_data['audio_id']))
 
-        print sound.spectrum.shape
-
         # (2) create an audio finger print
         fingerprinter = fingerprinting.Fingerprinter(spectrum)
         fingerprinter.profile.getPeaks(5)

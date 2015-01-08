@@ -17,7 +17,7 @@ def push_alerts(profile):
         snd_class = profile.classification
         # TO DO: pull date/time from spectrum slice and sound start time
         date_time = str(datetime.datetime.now())
-        incident_key = guardian_id +'-'+snd_class+'-'+ date_time
+        incident_key = guardian_id +'-'+str(snd_class)+'-'+ date_time
         api_url = 'http://localhost:/5000:' # Send an alert event to API via JSON data
         payload = '''{
                     "service_key": %s,
