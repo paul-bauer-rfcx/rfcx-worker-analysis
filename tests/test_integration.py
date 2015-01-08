@@ -3,7 +3,7 @@ import nose
 from modules                import service_layer
 from modules.domain_modules import load_sound
 from modules.domain_modules import spectral_analysis
-from modules.domain_modules import sound_profiling
+from modules.domain_modules import sound_classification
 from modules.domain_modules import alerts
 
 # def test_load_sound_module_takes_in_wav_file(self):
