@@ -26,17 +26,19 @@ def parse_arguments():
 	parser = argparse.ArgumentParser(description='Analyze sound file')
 	parser.add_argument("-b","--background", help="run process in background (does not work on windows machines)", action="store_true")
 	parser.add_argument("-l","--local", help="Local development mode for write out locat, alerts, and files", action="store_true")
-	parser.add_argument("file_path", help="File path to a Wav audio file")
+	parser.add_argument("-wav", "--wav_path", help="File path to a Wav audio file")
 	# Try to get meta-data from a file before falling back to flags
 	try:
-		parser.add_argument("data_file", type=file, help="Meta-data file.")
+		parser.add_argument("-data", "--data_file", help="Meta-data file.")
+		args = parser.parse_args()
 	except:
 		parser.add_argument("-g","--guardian_id", help="ID of the guardian", required=True)
 		parser.add_argument("-a","--audio_id", help="ID of the audio file", required=True)
 		parser.add_argument("-dt","--start_time", help="Local time audio recording started. ex.'2014-12-23T13:46:42.311Z'.", required=True)
 		parser.add_argument("-ll","--lat_lng", help="Lat/Long of device", required=True)
 		parser.add_argument("-t","--ambient_temp", help="Ambient temp", required=True)
-	return parser.parse_args()
+		args = parser.parse_args()
+	return args
 
 def parse_data_file(args):
 	meta_data = {}
@@ -74,7 +76,7 @@ def main():
 	logger = setup_logging(args.local)
 	# read sound file from fs passed by sys.argv
 	aa = service_layer.AcquireAudio(logger)
-	sound = aa.read(args.file_path, meta_data)
+	sound = aa.read(args.wav_path, meta_data)
 
 	# fork if background option is set
 	if args.background and os.name != "nt":
