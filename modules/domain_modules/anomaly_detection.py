@@ -22,18 +22,23 @@ class AnomalyDetector(object):
         # Todo: make it thread-safe
         model = self.repo.get_model(guardian_id)
 
-        if model == None:
+        if model == "no such station!":
             model = Gaussian()
             self.logger.info("""Created new anomaly detection model for guardian_id %s""" % (guardian_id))
 
         spectrum = profile.spectrum
 
-		# learn features for later modelling
-        model.train(spectrum)
+        # learn features for later modelling
+        for column in spectrum.T: 
+            model.train(column)
+
         self.repo.update_model(guardian_id, model)
         self.logger.info("""Updated anomaly detection model for guardian_id %s""" % (guardian_id))
 
-        profile.anomaly_prob = model.calculate_prob(spectrum)
+        profile.anomaly_prob = 0.0
+        for column in spectrum.T: 
+            profile.anomaly_prob = max(model.calculate_prob(column), profile.anomaly_prob) 
+
         self.logger.info("""Anomaly probability at guardian_id %s is %f""" % (guardian_id, profile.anomaly_prob))
 
 
@@ -82,14 +87,14 @@ will be  our meassure of the overall probability of hte signal
 being ambient noise.
 """
 class Gaussian(SignalLikelihood):
-    def __init__(self):
-        self.mean = None
-        self.var = None
-        self.sumSquareDif = None
-        self.n = 0
-        # added placeholder attributes for DB model (TO DO: Fix!)
-        self.meanL = None
-        self.varianceL = None
+    def __init__(self, mean = None, var = None, sumSquareDif=None, n=0):
+        self.mean = mean
+        self.var = var
+        self.sumSquareDif = sumSquareDif
+        self.n = n
+
+    def __eq__(self, other): 
+        return other != None and np.allclose(self.mean, other.mean) and np.allclose(self.var, other.var) and np.allclose(self.sumSquareDif,other.sumSquareDif) and self.n == other.n 
 
     def train(self, features):
         """
@@ -132,9 +137,7 @@ class Gaussian(SignalLikelihood):
         features = np.absolute(features)
         if np.any(self.var == 0):
             return 0
-        print features
-        print self.mean
-        print self.var
+
         # this is a vectorized version of the pdf of a normal distribution for each frequency amplitude
         # it returns one probability for each of the signal's frequency amplitudes
         probs = np.exp(-(features-self.mean)**2/(2.*self.var**2)) / (math.sqrt(math.pi * 2.) * self.var)
