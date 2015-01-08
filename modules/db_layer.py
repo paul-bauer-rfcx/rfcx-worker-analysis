@@ -11,7 +11,6 @@ def c(*s):
     print s
 
 class AnomalyDetectionRepo:
-<<<<<<< HEAD
     '''
     Now working with Redis,...
     '''
