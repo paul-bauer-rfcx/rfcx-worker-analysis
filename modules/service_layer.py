@@ -9,11 +9,9 @@ import os
 from domain_modules import load_sound
 from domain_modules import spectral_analysis
 from domain_modules import fingerprinting
-from domain_modules import sound_profiling
 from domain_modules import sound_classification
 from domain_modules import anomaly_detection
 from domain_modules import alerts
-
 
 # Todo: replace logging level by config file or command line options
 
@@ -23,54 +21,50 @@ class Service(object):
         self.logger = logger
 
 class AcquireAudio(Service):
-    def read(self, fs, guardian_id, audio_id):
-        self.logger.info("""Reading sound file %s""" % (audio_id))
+    def read(self, fs, meta_data):
+        self.logger.info("""Reading sound file %s""" % (meta_data["audio_id"]))
         try:
-            data, samplerate = load_sound.read_sound(fs)
+            sound = load_sound.read_sound(fs, meta_data)
         except Exception, e:
-            self.logger.error("""Read-in failed for file: %s\n\t%s""" % (audio_id, e))
+            self.logger.error("""Read-in failed for file: %s\n\t%s""" % (meta_data["audio_id"], e))
             exit(1)
         else:
-            self.logger.info("Read-in successful for file: %s""" % (audio_id))
-            return load_sound.Sound(data, samplerate, guardian_id, audio_id)
+            self.logger.info("Read-in successful for file: %s""" % (meta_data["audio_id"]))
+            return sound
 
 class AnalyzeSound(Service):
     def __init__(self, logger):
-        self.spec_analyzer = spectral_analysis.SpectralAnalysis()
         super(AnalyzeSound, self).__init__(logger)
 
     def analyze(self, sound):
         '''Analyze: Processes a wav file into a spectrum, profile it,
         and trigger results.
         '''
-        # basic workflow
         # (1) spectral analysis
-        self.spec_analyzer.add_spectrum(sound)
-        self.logger.info("""Completed spectral analyis for file: %s""" % (sound.file_id))
+        spectrum = spectral_analysis.Spectrum(sound)
+        self.logger.info("""Completed spectral analyis for file: %s""" % (sound.meta_data['audio_id']))
 
         print sound.spectrum.shape
 
         # (2) create an audio finger print
-        prof_meta = fingerprinting.Fingerprinter(sound).profile
-        self.logger.info("""Completed fingerprinting for file: %s""" % (sound.file_id))
+        fingerprinter = fingerprinting.Fingerprinter(spectrum)
+        fingerprinter.profile.getPeaks(5)
+        prof_meta = fingerprinter.profile
+        self.logger.info("""Completed fingerprinting for file: %s""" % (sound.meta_data['audio_id']))
 
-        # (3) classify the sound via known sound sources
-        sound_classification.SoundClassifier(self.logger).classify(prof_meta)
-        self.logger.info("""Completed fingerprinting for file: %s""" % (sound.file_id))
+        # (3) explicit detection and classification of sound against known sound sources
+        prof_final = sound_classification.SoundClassifier(self.logger).classify(prof_meta)
+        self.logger.info("""Completed classification for file: %s""" % (sound.meta_data['audio_id']))
 
         # (4) use ML to determine whether the sound is an anomaly
         # Todo: add requirements for anomaly detection, then add these lines
         repo = db_layer.AnomalyDetectionRepo()
-        anomaly_detection.AnomalyDetector(self.logger, repo).determine_anomaly(prof_meta)
-        self.logger.info("""Completed ML analysis for file: %s""" % (sound.file_id))
+        anomaly_detection.AnomalyDetector(self.logger, repo).determine_anomaly(prof_final)
+        self.logger.info("""Completed ML analysis for file: %s""" % (sound.meta_data['audio_id']))
 
-        # (5)
-        prof_final = sound_profiling.SoundProfiler(prof_meta).profile
-        self.logger.info("""Completed profiling for file: %s""" % (sound.file_id))
-
-        # (6) alert if necessary
-        alert = alerts.Alert(prof_final)
-        self.logger.info("""Sent all required alerts for file: %s""" % (sound.file_id))
+        # (5) send alerts if necessary
+        alert = alerts.push_alerts(prof_final)
+        self.logger.info("""Sent all required alerts for file: %s""" % (sound.meta_data['audio_id']))
 
 
 class UpdateSoundProfile(object):

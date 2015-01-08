@@ -11,6 +11,7 @@ def c(*s):
     print s
 
 class AnomalyDetectionRepo:
+<<<<<<< HEAD
     '''
     Now working with Redis,...
     '''
@@ -31,7 +32,7 @@ class AnomalyDetectionRepo:
         stationH= {'varianceLZ': varianceLZ, 'meanLZ': meanLZ, 'sumSquareDifZ': sumSquareDifZ, 'nZ': nZ}
         self.r.hmset(stationHZ, stationH)
 
-    def toNumpy(self, array): 
+    def toNumpy(self, array):
         np_array = np.array(array)
         return np_array.astype(np.float)
 
@@ -43,7 +44,7 @@ class AnomalyDetectionRepo:
         if not exists:
             return None
 
-        # get keys 
+        # get keys
         stationHZ= self.r.hget(self.baseH, station)
         stationH= self.r.hgetall(stationHZ)
         meanLZ= stationH['meanLZ']
@@ -51,13 +52,13 @@ class AnomalyDetectionRepo:
         sumSquareDifZ = stationH['sumSquareDifZ']
         nZ = stationH['nZ']
 
-        # model variables 
+        # model variables
         m_mean = self.toNumpy( self.r.lrange(meanLZ, 0, -1) )
         m_var = self.toNumpy( self.r.lrange(varianceLZ, 0, -1) )
         m_sumSquareDif = self.toNumpy( self.r.lrange(sumSquareDifZ, 0,-1) )
         m_n = float( self.r.get(nZ) )
-        return anomaly_detection.Gaussian( m_mean, m_var, m_sumSquareDif, m_n) 
-      
+        return anomaly_detection.Gaussian( m_mean, m_var, m_sumSquareDif, m_n)
+
 
     def update_model(self, station, model):
         exists= self.r.hexists(self.baseH, station)
@@ -78,7 +79,3 @@ class AnomalyDetectionRepo:
         self.r.rpush(varianceLZ, *model.var)
         self.r.rpush(sumSquareDifLZ, *model.sumSquareDif)
         self.r.set(nLZ, model.n)
-
-
-
-
