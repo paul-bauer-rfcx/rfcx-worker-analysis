@@ -5,6 +5,7 @@ known sound has been detected.
 import requests
 import json
 import datetime
+import os
 
 
 def push_alerts(profile):
@@ -18,7 +19,7 @@ def push_alerts(profile):
         # TO DO: pull date/time from spectrum slice and sound start time
         date_time = str(datetime.datetime.now())
         incident_key = guardian_id +'-'+str(snd_class)+'-'+ date_time
-        api_url = 'http://localhost:/5000:' # Send an alert event to API via JSON data
+        api_url = os.environ["ALERT_API_HOST"]+"/v1/guardians/"+guardian_id+"/alerts"
         payload = '''{
                     "service_key": %s,
                     "incident_key": %s,

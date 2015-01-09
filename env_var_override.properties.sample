@@ -1,3 +1,4 @@
 REDIS_HOST=""
 REDIS_PORT=""
 REDIS_DB=""
+ALERT_API_HOST=https://api.rfcx.org
