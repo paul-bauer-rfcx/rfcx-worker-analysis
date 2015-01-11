@@ -29,4 +29,8 @@ def push_alerts(profile):
                                     "details": "{\"ping time\": \"1500ms\",\"load avg\": \"0.75\"}"
                                 })
                     }
-        api_req = requests.post(api_url, files=payload)
+        try:
+            api_req = requests.post(api_url, files=payload)
+        except ConnectionError:
+            # dev connection to server will not exist (111 response)
+            print "Fake alert: in dev mode."
