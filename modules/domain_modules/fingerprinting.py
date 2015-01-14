@@ -3,6 +3,7 @@ additional audio and spectrum analysis.
 '''
 from spectral_analysis import Bbox
 from scipy.interpolate import interp1d
+from matplotlib import pyplot as plt
 import numpy as np
 import scipy
 
@@ -128,7 +129,7 @@ class Profile(object):
             freq_intvl = 0.
             harmonic_power = 0.
 
-        return self.peaks, peak_mags, harmonic_power, freq_intvl
+        return self.peaks, self.peak_mags, self.harmonic_power, freq_intvl
 
     def profile_plot(self, **kwargs):
         return profile_plot(self, **kwargs)
@@ -146,7 +147,6 @@ def profile_plot(self,
     generate plot of all of or bbox of spectrogram
     self ... spectrogam object
     """
-    from matplotlib import pyplot as plt
     spc = self.spectrum
     bbox = Bbox(spc, start_freq, end_freq, start_time, end_time)
 
@@ -183,7 +183,6 @@ def power_plot(self, t=None,
     ):
     """
     """
-    from matplotlib import pyplot as plt
     spc = self.spectrum
     plt.cla()
     plt.clf()

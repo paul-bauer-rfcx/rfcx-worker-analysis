@@ -7,6 +7,7 @@ from numpy.testing import assert_array_almost_equal,assert_almost_equal, assert_
 from abc import ABCMeta, abstractmethod
 import math
 
+
 class AnomalyDetector(object):
     # basic dependency injection
     def __init__(self, logger, repository):

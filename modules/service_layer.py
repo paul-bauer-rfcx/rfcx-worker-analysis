@@ -46,12 +46,11 @@ class AnalyzeSound(Service):
 
         # (2) create an audio finger print
         fingerprinter = fingerprinting.Fingerprinter(spectrum)
-        fingerprinter.profile.getPeaks(5, 10, (400,1000))
-        prof_meta = fingerprinter.profile
+        fingerprinter.profile.getPeaks(5, 10, (10,100))
         self.logger.info("""Completed fingerprinting for file: %s""" % (sound.meta_data['audio_id']))
 
         # (3) explicit detection and classification of sound against known sound sources
-        prof_final = sound_classification.SoundClassifier(self.logger).classify(prof_meta)
+        prof_final = sound_classification.SoundClassifier(self.logger).classify_interest_areas(fingerprinter.profile)
         self.logger.info("""Completed classification for file: %s""" % (sound.meta_data['audio_id']))
 
         # (4) use ML to determine whether the sound is an anomaly
@@ -61,8 +60,9 @@ class AnalyzeSound(Service):
         self.logger.info("""Completed ML analysis for file: %s""" % (sound.meta_data['audio_id']))
 
         # (5) send alerts if necessary
-        alert = alerts.push_alerts(prof_final)
-        self.logger.info("""Sent all required alerts for file: %s""" % (sound.meta_data['audio_id']))
+        alert_sender = alerts.AlertSender(self.logger, prof_final)
+        alert_sender.push_alerts()
+        self.logger.info("""Completed sending of alerts for file: %s""" % (sound.meta_data['audio_id']))
 
 
 class UpdateSoundProfile(object):
