@@ -42,7 +42,7 @@ class AnalyzeSound(Service):
         '''
         # (1) spectral analysis
         spectrum = spectral_analysis.Spectrum(sound)
-        self.logger.info("""Completed spectrum generation for [file: %s""" % (sound.meta_data['audio_id']))
+        self.logger.info("""Completed spectrum generation for file: %s""" % (sound.meta_data['audio_id']))
         self.logger.warn("""Analyzing: %s""" %(sound.meta_data['audio_id']))
 
         # (2) create an audio finger print
