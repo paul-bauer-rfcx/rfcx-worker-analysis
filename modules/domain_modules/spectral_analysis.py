@@ -39,14 +39,18 @@ class Spectrum(object):
         self.framesz = framesz
         self.hop = hop
         self.duration = sound.duration
-        self.complex_arr, self.samplerate, self.freqs = stft(
+        self.complex_arr, self.samplerate, freqs = stft(
             sound.data, sound.samplerate, self.framesz, self.hop
         )
+        self.freq_count = freqs.shape[0]/2
+        self.freqs = freqs[:self.freq_count]
         self._calc()
         self.times = np.linspace(0., self.duration, self.complex_arr.shape[1])
 
     def _calc(self):
-        self.abs_arr = np.absolute(self.complex_arr)
+        self.abs_arr = np.absolute(self.complex_arr[:self.freq_count,:])
+        self.abs_arr[0,:] = 0.0000000001
+        np.clip(self.abs_arr, 0.0000000001, None, out=self.abs_arr)
         self.db_arr = 20.*np.log10(self.abs_arr)
 
     def isolate(self, start_freq=None, end_freq=None, start_time=None, end_time=None):
@@ -56,9 +60,6 @@ class Spectrum(object):
         self.complex_arr[:,:]=.000001+.000001j
         self.complex_arr[freq_slice, time_slice] = cpy
         self._calc()
-
-    def plot(self, *args, **kwargs):
-        return spc_plot(self, **kwargs)
 
     def to_sound(self):
         """
@@ -75,27 +76,6 @@ class Spectrum(object):
         """
         time_ix = np.argmin(np.abs(self.times-time))
         return self.abs_arr[:, time_ix]
-
-def spc_plot(self, start_freq=None, end_freq=None, start_time=None, end_time=None):
-    """
-    generate plot of all of or bbox of spectrogram
-    self ... spectrogam object
-    """
-    bbox = Bbox(self, start_freq, end_freq, start_time, end_time)
-    freq_slice, time_slice = bbox.ix()
-    x2 = self.db_arr[freq_slice, time_slice]
-    # build plot
-    plt.clf()
-    plt.imshow(
-        np.clip(x2,0,None),
-        extent=[bbox.start_time, bbox.end_time, bbox.start_freq, bbox.end_freq],
-        aspect='auto',
-        cmap='gist_heat_r',
-    )
-    plt.grid(b=True, which='major',linestyle='-', alpha=.5)
-    plt.xlabel('Time (s)')
-    plt.ylabel('Frequency (Hz)')
-    return plt.gcf()
 
 
 def stft(x, fs, framesz, hop):
