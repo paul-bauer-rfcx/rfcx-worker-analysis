@@ -5,10 +5,12 @@ sound object with the audio and meta data passed in from a device.
 import os
 import random
 import requests
-from scipy.io import wavfile as wav
-from scipy.signal import resample
-import numpy as np
 import subprocess
+import numpy as np
+from scipy.io           import wavfile as wav
+from scipy              import signal
+from scipy.interpolate  import interp1d
+
 
 class Sound(object):
     """
@@ -30,8 +32,6 @@ class Sound(object):
         """create a new sound object by resampling this one
         newsamplerate .. sample rate for new sound
         """
-        from scipy import signal
-        from scipy.interpolate import interp1d
         if self.samplerate==newsamplerate:
             return self
         shape = self.data.shape[0]
@@ -41,7 +41,7 @@ class Sound(object):
         y = self.data
 
         f = interp1d(x, y, kind='linear')
-        
+
         newx = np.linspace(0., self.duration, newshape)
 
         w = signal.get_window(4.0, 9)
