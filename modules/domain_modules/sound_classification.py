@@ -16,14 +16,10 @@ class SoundClassifier(object):
         # Todo: add actual classification + use array instead of a
         # string (allows for multiple detection)
         profile.alerts = []
-        interest_areas = profile.classification
-        if interest_areas != []:
+        interest_areas = profile.interest_areas
+        if interest_areas != None:
             for iarea in interest_areas:
-                for known_sound in ["chainsaw","car","bird"]:
-                    # TO DO: Change placeholder code to compare proper aspects of sound's profile
-                    if profile.peaks != None:
-                        profile.alerts.append(known_sound)
-                    else:
-                        profile.alerts.append("unknown")
-                self.logger.info("""Classifed interest areas as: %s""" % (profile.alerts))
+                profile.alerts.append("automobile")
+                # profile.alerts.append("unknown")
+                self.logger.info("""Classifed interest areas as: %s""" % ("automobile")
         return profile

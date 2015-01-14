@@ -46,7 +46,8 @@ class AnalyzeSound(Service):
 
         # (2) create an audio finger print
         fingerprinter = fingerprinting.Fingerprinter(spectrum)
-        fingerprinter.profile.getPeaks(5, 10, (10,100))
+        fingerprinter.profile.get_harmonic_power()
+        fingerprinter.profile.get_harmonic_sound_bounds()
         self.logger.info("""Completed fingerprinting for file: %s""" % (sound.meta_data['audio_id']))
 
         # (3) explicit detection and classification of sound against known sound sources
@@ -62,8 +63,6 @@ class AnalyzeSound(Service):
         # (5) send alerts if necessary
         alert_sender = alerts.AlertSender(self.logger, prof_final)
         alert_sender.push_alerts()
-        self.logger.info("""Completed sending of alerts for file: %s""" % (sound.meta_data['audio_id']))
-
 
 class UpdateSoundProfile(object):
     def __init__(self, profile, settings):

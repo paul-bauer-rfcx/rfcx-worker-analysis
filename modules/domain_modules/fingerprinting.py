@@ -32,6 +32,7 @@ class Profile(object):
         self.anomaly_prob = 0.0
         self.harmonic_power = None
         self.harmonic_intvl = None
+        self.interest_areas = []
 
     def getPeaks2(self, t):
         ''' get peaks based on relative height (ignore harmonics)
@@ -70,7 +71,7 @@ class Profile(object):
             stops=stops[1:]
         l = zip(self.spectrum.times[starts], self.spectrum.times[stops])
         l = [e for e in l if e[1]-e[0]>5.]
-        return l
+        self.interest_areas = l
 
 
     def getPeaks(self, t, ct=10, interval_range=(None, None)):

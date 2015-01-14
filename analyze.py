@@ -37,6 +37,7 @@ def parse_arguments():
 		parser.add_argument("-dt","--start_time", help="Local time audio recording started. ex.'2014-12-23T13:46:42.311Z'.", required=True)
 		parser.add_argument("-ll","--lat_lng", help="Lat/Long of device", required=True)
 		parser.add_argument("-t","--ambient_temp", help="Ambient temp", required=True)
+		parser.add_argument("-c", "--checkin_id", help="Check-in ID", required=True)
 		args = parser.parse_args()
 	return args
 
@@ -56,6 +57,7 @@ def parse_data_file(args):
 		meta_data["start_time"] = args.start_time
 		meta_data["lat_lng"] = args.lat_lng.split(",")
 		meta_data["ambient_temp"] = args.ambient_temp
+		meta_data["checkin_id"] = args.checkin_id
 	return meta_data
 
 def setup_logging(local=False):

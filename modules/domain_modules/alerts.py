@@ -18,15 +18,15 @@ class AlertSender(object):
         '''If alerts array passed in has sound(s) of a KNOWN type,
         trigger alert to both 3rd party and RFCx internal API.
         '''
+        guardian_id = self.profile.guardian_id
+        date_time = str(datetime.datetime.now())
         if self.profile.alerts != []:
-            for sound in set(self.profile.classification):
+            for sound in set(self.profile.alerts):
                 service_key = "TEST ONLY - NO API CALL" # get account key from config file
-                guardian_id = self.profile.guardian_id
                 snd_class = self.profile.classification
                 # TO DO: pull date/time from spectrum slice and sound start time
-                date_time = str(datetime.datetime.now())
                 incident_key = guardian_id +'-'+str(snd_class)+'-'+ date_time
-                api_url = os.environ["ALERT_API_HOST"]+"/v1/guardians/"+guardian_id+"/alerts"
+                api_alert_url = os.environ["ALERT_API_HOST"]+"/v1/guardians/"+guardian_id+"/alerts"
                 payload = {"data" : str({   "service_key": service_key,
                                             "incident_key": incident_key,
                                             "event_type": "trigger",
@@ -36,6 +36,15 @@ class AlertSender(object):
                                             "details": "{\"ping time\": \"1500ms\",\"load avg\": \"0.75\"}"
                                         })
                             }
-                api_req = requests.post(api_url, files=payload)
+                api_alert_req = requests.post(api_alert_url, files=payload)
         else:
             self.logger.info("""No alerts to send for file: %s""" % (self.profile.spectrum.sound.meta_data['audio_id']))
+
+        # check in with API to signal completion of processing for a given audio file
+        checkin_id = self.profile.spectrum.sound.meta_data['checkin_id']
+        audio_id = self.profile.spectrum.sound.meta_data['audio_id']
+        api_completion_url = os.environ["ALERT_API_HOST"]+"/v1/guardians/"+guardian_id+"/checkins/"+checkin_id+"/audio/"+audio_id
+        payload = { "alerts": str(self.profile.alerts),
+                    "analysis_complete" : date_time
+                }
+        api_alert_req = requests.post(api_completion_url, files=payload)
