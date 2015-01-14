@@ -46,7 +46,7 @@ class AnalyzeSound(Service):
 
         # (2) create an audio finger print
         fingerprinter = fingerprinting.Fingerprinter(spectrum)
-        fingerprinter.profile.getPeaks(5)
+        fingerprinter.profile.getPeaks(5, 10, (400,1000))
         prof_meta = fingerprinter.profile
         self.logger.info("""Completed fingerprinting for file: %s""" % (sound.meta_data['audio_id']))
 

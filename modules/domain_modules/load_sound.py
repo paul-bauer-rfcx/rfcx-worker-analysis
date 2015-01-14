@@ -5,8 +5,12 @@ sound object with the audio and meta data passed in from a device.
 import os
 import random
 import requests
-from scipy.io import wavfile as wav
-from scipy.signal import resample
+import subprocess
+import numpy as np
+from scipy.io           import wavfile as wav
+from scipy              import signal
+from scipy.interpolate  import interp1d
+
 
 class Sound(object):
     """
@@ -28,8 +32,21 @@ class Sound(object):
         """create a new sound object by resampling this one
         newsamplerate .. sample rate for new sound
         """
-        newshape = int(self.data.shape[0]*newsamplerate/self.samplerate)
-        newdata = resample(self.data, newshape)
+        if self.samplerate==newsamplerate:
+            return self
+        shape = self.data.shape[0]
+        newshape = int(shape*newsamplerate/self.samplerate)
+
+        x = np.linspace(0, self.duration, shape)
+        y = self.data
+
+        f = interp1d(x, y, kind='linear')
+
+        newx = np.linspace(0., self.duration, newshape)
+
+        w = signal.get_window(4.0, 9)
+        #newdata = resample(self.data, newshape, window=w)
+        newdata = f(newx)
         return Sound(newdata, newsamplerate, self.meta_data)
 
     def crop(self, starttime, endtime):
@@ -46,17 +63,19 @@ def read_sound(fp, meta_data):
     """
     create a Sound object from audio file
     """
-    try:
-        samplerate, data = wav.read(fp)
-    except Exception, e:
-        self.logger.error("""Unsupported file type was used: %s\n %s""" % (audio_id, e))
-        exit(1)
-    else:
-        if len(data.shape)>1:
-            data = data[:, 0]
-        data = data.astype('float64')
-        data /= data.max()
-        return Sound(data, samplerate, meta_data)
+    fp0 = fp
+    if not fp.endswith('wav'):
+        result = subprocess.call(['ffmpeg','-y','-i', fp, 'test.wav'])
+        assert(result is 0)
+        fp0 = 'test.wav'
+    samplerate, data = wav.read(fp0)
+    if len(data.shape)>1:
+        data = data[:, 0]
+    data = data.astype('float64')
+    data /= 32768.  #data.max()
+    s = Sound(data, samplerate, meta_data)
+    s.fp = fp
+    return s
 
 
 def write_sound(fp, sound):
