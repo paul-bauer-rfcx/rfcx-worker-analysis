@@ -31,6 +31,6 @@ def push_alerts(profile):
                     }
         try:
             api_req = requests.post(api_url, files=payload)
-        except ConnectionError:
+        except Exception:
             # dev connection to server will not exist (111 response)
             print "Fake alert: in dev mode."
