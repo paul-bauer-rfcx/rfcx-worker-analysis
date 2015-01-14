@@ -21,5 +21,5 @@ class SoundClassifier(object):
             for iarea in interest_areas:
                 profile.alerts.append("automobile")
                 # profile.alerts.append("unknown")
-                self.logger.info("""Classifed interest areas as: %s""" % ("automobile")
+                self.logger.info("""Classifed interest areas as: %s""" % ("automobile"))
         return profile
