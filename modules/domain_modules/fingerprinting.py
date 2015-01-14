@@ -2,6 +2,7 @@
 additional audio and spectrum analysis.
 '''
 from spectral_analysis import Bbox
+from scipy.interpolate import interp1d
 import numpy as np
 import scipy
 
@@ -92,7 +93,6 @@ class Profile(object):
         mx_freq = interval_range[1]
         base = np.arange(ct)+1.
 
-        from scipy.interpolate import interp1d
         interp_func = interp1d(s.freqs, a,
             kind='linear', bounds_error=False)
 
