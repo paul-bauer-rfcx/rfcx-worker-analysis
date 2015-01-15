@@ -20,10 +20,10 @@ class AlertSender(object):
         '''
         guardian_id = self.profile.guardian_id
         date_time = str(datetime.datetime.now())
-        if self.profile.alerts != []:
-            for sound in set(self.profile.alerts):
+        if self.profile.interest_areas != []:
+            for event in self.profile.interest_areas:
                 service_key = "TEST ONLY - NO API CALL" # get account key from config file
-                snd_class = self.profile.classification
+                snd_class = "automobile" # placeholder classification! Remove!
                 # TO DO: pull date/time from spectrum slice and sound start time
                 incident_key = guardian_id +'-'+str(snd_class)+'-'+ date_time
                 api_alert_url = os.environ["ALERT_API_HOST"]+"/v1/guardians/"+guardian_id+"/alerts"
@@ -44,7 +44,7 @@ class AlertSender(object):
         checkin_id = self.profile.spectrum.sound.meta_data['checkin_id']
         audio_id = self.profile.spectrum.sound.meta_data['audio_id']
         api_completion_url = os.environ["ALERT_API_HOST"]+"/v1/guardians/"+guardian_id+"/checkins/"+checkin_id+"/audio/"+audio_id
-        payload = { "alerts": str(self.profile.alerts),
+        payload = { "alerts": str(self.profile.interest_areas),
                     "analysis_complete" : date_time
                 }
         api_alert_req = requests.post(api_completion_url, files=payload)

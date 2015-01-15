@@ -1,7 +1,6 @@
 '''Service Layer Module.
 Contains high-level code from which calls to the logic layer can be made.
 '''
-import re
 import logging
 import db_layer
 import os
@@ -52,18 +51,19 @@ class AnalyzeSound(Service):
         self.logger.info("""Completed fingerprinting for file: %s""" % (sound.meta_data['audio_id']))
 
         # (3) explicit detection and classification of sound against known sound sources
-        prof_final = sound_classification.SoundClassifier(self.logger).classify_interest_areas(fingerprinter.profile)
-        self.logger.info("""Completed classification for file: %s""" % (sound.meta_data['audio_id']))
+        # prof_final = sound_classification.SoundClassifier(self.logger).classify_interest_areas(fingerprinter.profile)
+        # self.logger.info("""Completed classification for file: %s""" % (sound.meta_data['audio_id']))
 
         # (4) use ML to determine whether the sound is an anomaly
         # Todo: add requirements for anomaly detection, then add these lines
         repo = db_layer.AnomalyDetectionRepo()
-        anomaly_detection.AnomalyDetector(self.logger, repo).determine_anomaly(prof_final)
+        anomaly_detection.AnomalyDetector(self.logger, repo).determine_anomaly(fingerprinter.profile)
         self.logger.info("""Completed ML analysis for file: %s""" % (sound.meta_data['audio_id']))
 
-        # (5) send alerts if necessary
-        alert_sender = alerts.AlertSender(self.logger, prof_final)
+        # (5) send alerts if necessary based on interest areas found in fingerprinting module
+        alert_sender = alerts.AlertSender(self.logger, fingerprinter.profile)
         alert_sender.push_alerts()
+        self.logger.info("""Completed sending alerts for file: %s""" % (sound.meta_data['audio_id']))
 
 class UpdateSoundProfile(object):
     def __init__(self, profile, settings):

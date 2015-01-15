@@ -16,10 +16,8 @@ class SoundClassifier(object):
         # Todo: add actual classification + use array instead of a
         # string (allows for multiple detection)
         profile.alerts = []
-        interest_areas = profile.interest_areas
-        if interest_areas != None:
-            for iarea in interest_areas:
-                profile.alerts.append("automobile")
-                # profile.alerts.append("unknown")
-                self.logger.info("""Classifed interest areas as: %s""" % ("automobile"))
+        for iarea in profile.interest_areas:
+            profile.alerts.append("automobile")
+            # profile.alerts.append("unknown")
+            self.logger.info("""Classifed interest areas as: %s""" % ("automobile"))
         return profile
