@@ -121,16 +121,16 @@ class Profile(object):
         peaks_mag = np.average(peak_mags)
 
         # update profile values
-        self.peak_mags = np.average(peak_mags)
-        self.harmonic_power = peak_mags/overall_mag
-        self.overall_mag = overall_mag
-        self.peaks = peak_freqs
+        peak_mags = np.average(peak_mags)
+        harmonic_power = peak_mags/overall_mag
+        overall_mag = overall_mag
+        peaks = peak_freqs
 
         if not interval_range[0]<freq_intvl<interval_range[1]:
             freq_intvl = 0.
             harmonic_power = 0.
 
-        return self.peaks, self.peak_mags, self.harmonic_power, freq_intvl
+        return peaks, peak_mags, harmonic_power, freq_intvl
 
     def profile_plot(self, **kwargs):
         return profile_plot(self, **kwargs)

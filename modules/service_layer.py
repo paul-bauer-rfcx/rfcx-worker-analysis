@@ -49,7 +49,7 @@ class AnalyzeSound(Service):
         fingerprinter.profile.get_harmonic_power()
         fingerprinter.profile.get_harmonic_sound_bounds()
         self.logger.info("""Completed fingerprinting for file: %s""" % (sound.meta_data['audio_id']))
-
+        self.logger.info("Found %i areas of interest."% (len(fingerprinter.profile.interest_areas),))
         # (3) explicit detection and classification of sound against known sound sources
         # prof_final = sound_classification.SoundClassifier(self.logger).classify_interest_areas(fingerprinter.profile)
         # self.logger.info("""Completed classification for file: %s""" % (sound.meta_data['audio_id']))

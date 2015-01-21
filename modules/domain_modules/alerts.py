@@ -20,6 +20,7 @@ class AlertSender(object):
         '''
         guardian_id = self.profile.guardian_id
         date_time = str(datetime.datetime.now())
+        audio_id = self.profile.spectrum.sound.meta_data['audio_id']
         if self.profile.interest_areas != []:
             for event in self.profile.interest_areas:
                 service_key = "TEST ONLY - NO API CALL" # get account key from config file
@@ -30,7 +31,7 @@ class AlertSender(object):
                 payload = {"data" : str({   "service_key": service_key,
                                             "incident_key": incident_key,
                                             "event_type": "trigger",
-                                            "description": "Detection of sound ("+sound+") by guardian "+guardian_id+" on "+date_time,
+                                            "description": "Detection of sound ("+audio_id+") by guardian "+guardian_id+" on "+date_time,
                                             "client": "Rainforest Connection Monitoring Service",
                                             "client_url": "http://rfcx.org/",
                                             "details": "{\"ping time\": \"1500ms\",\"load avg\": \"0.75\"}"
@@ -42,7 +43,7 @@ class AlertSender(object):
 
         # check in with API to signal completion of processing for a given audio file
         checkin_id = self.profile.spectrum.sound.meta_data['checkin_id']
-        audio_id = self.profile.spectrum.sound.meta_data['audio_id']
+        
         api_completion_url = os.environ["ALERT_API_HOST"]+"/v1/guardians/"+guardian_id+"/checkins/"+checkin_id+"/audio/"+audio_id
         payload = { "alerts": str(self.profile.interest_areas),
                     "analysis_complete" : date_time
