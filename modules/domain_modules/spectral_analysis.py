@@ -34,6 +34,8 @@ class Spectrum(object):
     spectrogram of a sound
     sound .. Sound object
     """
+    silence = 0.0000001
+    tooloud = 1.
     def __init__(self, sound, framesz=.2, hop=.1):
         self.sound = sound
         self.framesz = framesz
@@ -48,16 +50,18 @@ class Spectrum(object):
         self.times = np.linspace(0., self.duration, self.complex_arr.shape[1])
 
     def _calc(self):
+        
         self.abs_arr = np.absolute(self.complex_arr[:self.freq_count,:])
-        self.abs_arr[0:2,:] = 0.0000000001
-        np.clip(self.abs_arr, 0.0000000001, None, out=self.abs_arr)
+        self.abs_arr[0:2,:] = self.silence
+        #self.abs_arr[-1,:] = self.silence
+        np.clip(self.abs_arr, self.silence, self.tooloud, out=self.abs_arr)
         self.db_arr = 20.*np.log10(self.abs_arr)
 
     def isolate(self, start_freq=None, end_freq=None, start_time=None, end_time=None):
         bbox = Bbox(self, start_freq, end_freq, start_time, end_time)
         freq_slice, time_slice = bbox.ix()
         cpy = self.complex_arr[freq_slice, time_slice].copy()
-        self.complex_arr[:,:]=.000001+.000001j
+        self.complex_arr[:,:] = self.silence * (1.0 + 1.0j)
         self.complex_arr[freq_slice, time_slice] = cpy
         self._calc()
 

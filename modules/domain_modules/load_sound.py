@@ -53,6 +53,8 @@ class Sound(object):
         """
         create a new sound from a section of this sound
         """
+        if starttime is None: starttime=0.
+        if endtime is None: endtime = self.duration
         sr = self.samplerate
         start_ix = int(sr*starttime)
         end_ix =  int(sr*endtime)
@@ -81,7 +83,7 @@ def read_sound(fp, meta_data, read_method='wav'):
         from os import path
         result = subprocess.call(
             ['ffmpeg','-y','-i', fp, 'test.wav'],
-            cwd=path.realpath('.'), shell=True,
+            #cwd=path.realpath('.'), shell=True,
         )
         assert(result is 0)
         fp0 = 'test.wav'

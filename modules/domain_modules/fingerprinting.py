@@ -32,6 +32,7 @@ class Profile(object):
         self.anomaly_prob = 0.0
         self.harmonic_power = None
         self.harmonic_intvl = None
+        self.volume_power = None
         self.interest_areas = []
 
     def getPeaks2(self, t):
@@ -41,6 +42,14 @@ class Profile(object):
         ix = np.r_[True, a[1:] > a[:-1]] & np.r_[a[:-1] > a[1:], True]
         ix[:] = (a>np.percentile(a,95)) & ix
         return self.spectrum.freqs[ix]
+
+    def get_volume_power(self):
+        """
+        """
+        vol = np.sum(self.spectrum.abs_arr, axis=0)
+        #rms = np.sqrt(np.average(vol**2))
+        vol[-1]=0
+        self.volume_power = vol/np.average(vol)
 
     def get_harmonic_power(self):
         """
@@ -52,25 +61,43 @@ class Profile(object):
         pwrs = np.empty_like(self.spectrum.times)
         ints = np.empty_like(self.spectrum.times)
         for i,t in enumerate(self.spectrum.times):
-            res = self.getPeaks(t, ct=10, interval_range=(5.,50.))
+            res = self.getPeaks(t, ct=10, interval_range=(15.,50.))
             pwrs[i] = res[2]
             ints[i] = res[3]
         self.harmonic_power = pwrs
         self.harmonic_intvl = ints
         return self.harmonic_power, self.harmonic_intvl
 
-    def get_harmonic_sound_bounds(self):
-        a = self.harmonic_power.astype(bool)
-        k = np.ones(2*self.spectrum.samplerate, dtype=bool)
+    def get_harmonic_sound_bounds(self, bleed_time=1., duration_threshold=2., power_threshold=2.):
+        """
+        bleed_time .. time in seconds to pad around any signal to fill gaps
+        duration_threshold .. time in seconds that contiguous segments of signal must exceed
+        """
+        if self.volume_power is None: self.get_volume_power()
+        if self.harmonic_power is None: self.get_harmonic_power()
+
+        pwr = self.volume_power * self.harmonic_power
+        ham = scipy.hamming(25)
+        ham/=np.sum(ham)
+        pwr = np.convolve(pwr,ham,'same')
+        self.total_power = pwr
+
+        a = pwr > power_threshold
+        bleed_ct = int(bleed_time*self.spectrum.samplerate)
+        k = np.ones(bleed_ct, dtype=bool)
         r = np.convolve(a, k, 'same')
-        stops = np.argwhere(np.logical_and(r[:-1], np.logical_not(r[1:]))).flatten()
-        starts = np.argwhere(np.logical_and(np.logical_not(r[:-1]), r[1:])).flatten()
-        if not starts.shape[0] or not stops.shape[0]:
+        stops = list(np.argwhere(np.logical_and(r[:-1], np.logical_not(r[1:]))).flatten())
+        starts = list(np.argwhere(np.logical_and(np.logical_not(r[:-1]), r[1:])).flatten())
+        if not starts and not stops:
             return []
-        if stops[0]<starts[0]:
-            stops=stops[1:]
+        if r[0]:
+            #stops=stops[1:]
+            starts = [True]+starts
+        if r[-1]:
+            stops = stops+[True]
+        assert len(stops)==len(starts)
         l = zip(self.spectrum.times[starts], self.spectrum.times[stops])
-        l = [e for e in l if e[1]-e[0]>5.]
+        l = [e for e in l if e[1]-e[0]>duration_threshold]
         self.interest_areas = l
 
 
@@ -154,27 +181,33 @@ def profile_plot(self,
     bbox = Bbox(spc, start_freq, end_freq, start_time, end_time)
 
     freq_slice, time_slice = bbox.ix()
-    x2 = spc.db_arr[freq_slice, time_slice][::-1,::1]
+    x2 = spc.db_arr[freq_slice, time_slice] #[::-1,::1]
     mn, mx = np.percentile(x2,[25,99.9])
     x3 = np.clip(x2,mn,mx)
     x3-= x3.min()
     x3/= x3.max()
     # build plot
     plt.clf()
+    '''
     plt.imshow(
         x3,
         extent=[bbox.start_time, bbox.end_time, bbox.start_freq, bbox.end_freq],
         aspect='auto',
         cmap='gist_heat_r',
-    )
-    if start_time or end_time:
-        plt.xlim(start_time, end_time)
+    )'''
+    X,Y = np.meshgrid(spc.times[time_slice], spc.freqs[freq_slice],)
+    plt.pcolormesh(X,Y,x3, cmap='gist_heat_r', shading='gouraud')
+    # place dots on detected harmonic peaks
     if hasattr(self, 'harmonic_intvl') and self.harmonic_intvl is not None:
         for i in range(10):
             plt.plot(spc.times, self.harmonic_intvl*(i+1), '.', color='g', alpha=.5)
+    # shade areas of interest
+    for start, stop in self.interest_areas:
+        plt.axvspan(start, stop, facecolor='y', alpha=.5, edgecolor='k')        
     if t:
         plt.axvline(t, color='b')
     plt.grid(b=True, which='major',linestyle='-', alpha=.5)
+    plt.xlim(bbox.start_time, bbox.end_time)
     plt.xlabel('Time (s)')
     plt.ylabel('Frequency (Hz)')
     return plt.gcf()
@@ -187,20 +220,32 @@ def power_plot(self, t=None,
     ):
     """
     """
+    
+    self.get_harmonic_sound_bounds()
     spc = self.spectrum
+    bbox = Bbox(spc, start_freq, end_freq, start_time, end_time)
     plt.cla()
     plt.clf()
-    plt.plot(spc.times, self.harmonic_power, color='r')
+    #plt.plot(spc.times, self.harmonic_power, color='r', label='harmonic power', alpha=.5)
+    #plt.plot(spc.times, self.volume_power, color='r', label = 'volume power', alpha=.5)
+
+    plt.plot(spc.times, self.total_power, color='k', label = 'power')
     plt.ylabel('Power')
+    plt.xlabel('Time (s)')
+    plt.legend(loc=2)
+    
     plt.twinx()
-    plt.plot(spc.times, self.harmonic_intvl, color='g')
+    plt.xlim(bbox.start_time, bbox.end_time)
+    plt.plot(spc.times, self.harmonic_intvl, color='g', label= 'harmonic interval')
 
     if start_time or end_time:
         plt.xlim(start_time, end_time)
     if start_freq or end_freq:
         plt.ylim(start_freq, end_freq)
-    plt.xlabel('Time (s)')
+    plt.legend(loc=1)
     plt.ylabel('Frequency (Hz)')
+    for start, stop in self.interest_areas:
+        plt.axvspan(start, stop, color='y', alpha=.25)
     if t:
         plt.axvline(t, color='b')
     return plt.gcf()
@@ -243,7 +288,7 @@ def peaks_plot(self, t=0.,
     )'''
     Z = db_band.T
     X,Y = np.meshgrid(np.linspace(0.,end_freq,Z.shape[1]), np.linspace(-1.,1.,Z.shape[0]))
-    ax1.pcolor(X,Y,Z, cmap='gist_heat_r')
+    ax1.pcolormesh(X,Y,Z, cmap='gist_heat_r', shading='gouraud')
     ax1.axhline(0, color='b')
     #ax1.set_xticklabels([])
     ax1.set_yticklabels([])
@@ -254,7 +299,7 @@ def peaks_plot(self, t=0.,
     values = interp_fn(harmonics)
     ax2.plot(harmonics, values, 'o', color='g', alpha=.5)
     ax2.set_ylim(-75, db_arr.max())
-    ax2.set_xlim(0, end_freq)
+    ax2.set_xlim(bbox.start_freq, bbox.end_freq)
     #fig.canvas.draw()
     #labels = [fmt(item.get_text()) for item in plt.gca().get_xticklabels()]
     #ax2.set_xticklabels(labels)
