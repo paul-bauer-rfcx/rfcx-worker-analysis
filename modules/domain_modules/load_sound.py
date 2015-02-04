@@ -32,7 +32,7 @@ class Sound(object):
         """create a new sound object by resampling this one
         newsamplerate .. sample rate for new sound
         """
-        if self.samplerate==newsamplerate:
+        if self.samplerate == newsamplerate:
             return self
         shape = self.data.shape[0]
         newshape = int(shape*newsamplerate/self.samplerate)
@@ -59,15 +59,35 @@ class Sound(object):
         newdata = self.data[start_ix:end_ix]
         return Sound(newdata, self.samplerate, self.meta_data)
 
-def read_sound(fp, meta_data):
+def read_sound(fp, meta_data, read_method='wav'):
     """
     create a Sound object from audio file
+    read_methods (str) ... 'wav', 'moviepy', 'ffmpeg'
     """
+    
+    if read_method is 'moviepy':
+        import moviepy.editor as mpy
+        aud_clip = mpy.AudioFileClip(fp)
+        data = aud_clip.to_soundarray()
+        samplerate = aud_clip.fps
+        if len(data.shape)>1:
+            data = data[:, 0]
+        s = Sound(data, samplerate, meta_data)
+        return s.resample(8000)
+
+
     fp0 = fp
     if not fp.endswith('wav'):
-        result = subprocess.call(['ffmpeg','-y','-i', fp, 'test.wav'])
+        from os import path
+        result = subprocess.call(
+            ['ffmpeg','-y','-i', fp, 'test.wav'],
+            cwd=path.realpath('.'), shell=True,
+        )
         assert(result is 0)
         fp0 = 'test.wav'
+
+
+
     samplerate, data = wav.read(fp0)
     if len(data.shape)>1:
         data = data[:, 0]

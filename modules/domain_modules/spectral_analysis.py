@@ -49,7 +49,7 @@ class Spectrum(object):
 
     def _calc(self):
         self.abs_arr = np.absolute(self.complex_arr[:self.freq_count,:])
-        self.abs_arr[0,:] = 0.0000000001
+        self.abs_arr[0:2,:] = 0.0000000001
         np.clip(self.abs_arr, 0.0000000001, None, out=self.abs_arr)
         self.db_arr = 20.*np.log10(self.abs_arr)
 
