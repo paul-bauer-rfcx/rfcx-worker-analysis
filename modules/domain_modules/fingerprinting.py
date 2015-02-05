@@ -48,8 +48,10 @@ class Profile(object):
         """
         vol = np.sum(self.spectrum.abs_arr, axis=0)
         #rms = np.sqrt(np.average(vol**2))
-        #vol[-1]=0
-        self.volume_power = vol/np.average(vol)
+        #avg = np.average(vol)
+        #pct = np.percentile(vol, 10)
+        pct = np.average(np.sort(vol)[:vol.shape[0]/10])
+        self.volume_power = vol/pct
 
     def get_harmonic_power(self):
         """
@@ -71,18 +73,22 @@ class Profile(object):
     def get_harmonic_sound_bounds(self, 
         bleed_time=0.5, 
         duration_threshold=1.5, 
-        power_threshold=4.,
+        power_threshold=10.,
         smoothing_window=1.,
+        harmonic_volume_weight=.7,
     ):
         """
         bleed_time .. time in seconds to pad around any signal to fill gaps
         duration_threshold .. time in seconds that contiguous segments of signal must exceed
+        power_threshold ..
+        smoothing_window .. time in seconds for length of smoothing wavelet
         """
         if self.volume_power is None: self.get_volume_power()
         if self.harmonic_power is None: self.get_harmonic_power()
         
         
-        pwr = self.harmonic_power #self.volume_power * 
+        pwr = self.harmonic_power * self.volume_power
+
         window_wid = int(smoothing_window*self.spectrum.samplerate)
         win = scipy.signal.ricker(window_wid,window_wid)
         win/=np.sum(win)
@@ -215,7 +221,7 @@ def profile_plot(self,
     # place dots on detected harmonic peaks
     if hasattr(self, 'harmonic_intvl') and self.harmonic_intvl is not None:
         for i in range(10):
-            plt.plot(spc.times, self.harmonic_intvl*(i+1), '.', color='g', alpha=.5)
+            plt.plot(spc.times, self.harmonic_intvl*(i+1), '.', color='g', alpha=.1)
     # shade areas of interest
     for start, stop in self.interest_areas:
         plt.axvspan(start, stop, facecolor='y', alpha=.5, edgecolor='k')        
@@ -241,8 +247,8 @@ def power_plot(self, t=None,
     bbox = Bbox(spc, start_freq, end_freq, start_time, end_time)
     plt.cla()
     plt.clf()
-    #plt.plot(spc.times, self.harmonic_power, color='r', label='harmonic power', alpha=.5)
-    #plt.plot(spc.times, self.volume_power, color='r', label = 'volume power', alpha=.5)
+    plt.plot(spc.times, self.harmonic_power, color='orange', label='harmonic power', alpha=.5)
+    plt.plot(spc.times, self.volume_power, color='cyan', label = 'volume power', alpha=.5)
 
     plt.plot(spc.times, self.total_power, color='k', label = 'power')
     plt.ylabel('Power')
@@ -251,7 +257,8 @@ def power_plot(self, t=None,
     
     plt.twinx()
     plt.xlim(bbox.start_time, bbox.end_time)
-    plt.plot(spc.times, self.harmonic_intvl, color='g', label= 'harmonic interval')
+    plt.plot(spc.times, self.harmonic_intvl, 
+        marker='o', markersize=3, ls='', color='g', alpha=.5, label= 'harmonic interval')
 
     if start_time or end_time:
         plt.xlim(start_time, end_time)
@@ -284,7 +291,6 @@ def peaks_plot(self, t=0.,
     #print db_band.shape
     db_slice = db_arr[freq_slice, offset]
     #x0p = np.abs(np.average(x0, axis=1))
-    #a = peak_find(x0p)
     harmonics = (np.arange(10)+1.)*self.harmonic_intvl[offset]
     plt.clf()
     #fig = plt.gcf()
@@ -312,7 +318,7 @@ def peaks_plot(self, t=0.,
     interp_fn = interp1d(self.spectrum.freqs[freq_slice], db_slice,
             kind='linear', bounds_error=False)
     values = interp_fn(harmonics)
-    ax2.plot(harmonics, values, 'o', color='g', alpha=.5)
+    ax2.plot(harmonics, values, linestyle='', marker='o', color='g', alpha=.5)
     ax2.set_ylim(-75, db_arr.max())
     ax2.set_xlim(bbox.start_freq, bbox.end_freq)
     #fig.canvas.draw()
@@ -327,6 +333,14 @@ def make_video(profile, name='test', bbox=None, plot_type='profile_plot'):
     """
     plot_type .. 'power_plot', 'profile_plot', 'peaks_plot'
     """
+    registry = ['power_plot', 'profile_plot', 'peaks_plot']
+    if plot_type == 'all': plot_type = registry
+    print type(plot_type)
+    if type(plot_type) is not str:
+        for ptype in plot_type:
+            make_video(profile, name, bbox, ptype)
+            return
+
     import moviepy.editor as mpy
     from moviepy.video.io.bindings import mplfig_to_npimage
     sound = profile.spectrum.sound

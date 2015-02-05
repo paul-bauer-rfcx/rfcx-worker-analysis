@@ -35,7 +35,7 @@ class Spectrum(object):
     sound .. Sound object
     """
     silence = 0.0000001
-    tooloud = 1.
+    tooloud = 100000.
     def __init__(self, sound, framesz=.2, hop=.1):
         self.sound = sound
         self.framesz = framesz
