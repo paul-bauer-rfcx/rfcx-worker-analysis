@@ -48,7 +48,7 @@ class Profile(object):
         """
         vol = np.sum(self.spectrum.abs_arr, axis=0)
         #rms = np.sqrt(np.average(vol**2))
-        vol[-1]=0
+        #vol[-1]=0
         self.volume_power = vol/np.average(vol)
 
     def get_harmonic_power(self):
@@ -68,33 +68,49 @@ class Profile(object):
         self.harmonic_intvl = ints
         return self.harmonic_power, self.harmonic_intvl
 
-    def get_harmonic_sound_bounds(self, bleed_time=1., duration_threshold=2., power_threshold=2.):
+    def get_harmonic_sound_bounds(self, 
+        bleed_time=0.5, 
+        duration_threshold=1.5, 
+        power_threshold=4.,
+        smoothing_window=1.,
+    ):
         """
         bleed_time .. time in seconds to pad around any signal to fill gaps
         duration_threshold .. time in seconds that contiguous segments of signal must exceed
         """
         if self.volume_power is None: self.get_volume_power()
         if self.harmonic_power is None: self.get_harmonic_power()
-
-        pwr = self.volume_power * self.harmonic_power
-        ham = scipy.hamming(25)
-        ham/=np.sum(ham)
-        pwr = np.convolve(pwr,ham,'same')
+        
+        
+        pwr = self.harmonic_power #self.volume_power * 
+        window_wid = int(smoothing_window*self.spectrum.samplerate)
+        win = scipy.signal.ricker(window_wid,window_wid)
+        win/=np.sum(win)
+        tmp = np.zeros(pwr.shape[0]+win.shape[0]-1)
+        off = win.shape[0]/2
+        tmp[off:pwr.shape[0]+off]=pwr
+        pwr = np.convolve(tmp, win, 'valid')
+        
+        #pwr = tmp[off:pwr.shape[0]+off]
+        #pwr[[0,-1]]=np.average(pwr[1:-1])
         self.total_power = pwr
 
         a = pwr > power_threshold
-        bleed_ct = int(bleed_time*self.spectrum.samplerate)
-        k = np.ones(bleed_ct, dtype=bool)
-        r = np.convolve(a, k, 'same')
+        if bleed_time is None:
+            r = a
+        else:
+            bleed_ct = int(bleed_time*self.spectrum.samplerate)
+            k = np.ones(bleed_ct, dtype=bool)
+            r = np.convolve(a, k, 'same')
         stops = list(np.argwhere(np.logical_and(r[:-1], np.logical_not(r[1:]))).flatten())
         starts = list(np.argwhere(np.logical_and(np.logical_not(r[:-1]), r[1:])).flatten())
         if not starts and not stops:
             return []
         if r[0]:
             #stops=stops[1:]
-            starts = [True]+starts
+            starts = [0]+starts
         if r[-1]:
-            stops = stops+[True]
+            stops = stops+[r.shape[0]-1]
         assert len(stops)==len(starts)
         l = zip(self.spectrum.times[starts], self.spectrum.times[stops])
         l = [e for e in l if e[1]-e[0]>duration_threshold]
@@ -150,10 +166,9 @@ class Profile(object):
         # update profile values
         peak_mags = np.average(peak_mags)
         harmonic_power = peak_mags/overall_mag
-        overall_mag = overall_mag
         peaks = peak_freqs
 
-        if not interval_range[0]<freq_intvl<interval_range[1]:
+        if not interval_range[0]<freq_intvl<interval_range[1] or np.isnan(harmonic_power):
             freq_intvl = 0.
             harmonic_power = 0.
 
